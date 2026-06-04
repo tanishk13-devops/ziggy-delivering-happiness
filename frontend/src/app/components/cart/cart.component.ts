@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 import { Cart } from '../../models/cart.model';
 
 @Component({
@@ -18,6 +19,7 @@ export class CartComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
+    public authService: AuthService,
     private router: Router
   ) {}
 
@@ -66,5 +68,25 @@ export class CartComponent implements OnInit {
 
   get totalAmount(): number {
     return this.cart.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }
+
+  get isGold(): boolean {
+    return this.authService.isGoldMember();
+  }
+
+  get discountAmount(): number {
+    return this.isGold ? Math.round(this.totalAmount * 0.1) : 0;
+  }
+
+  get deliveryFee(): number {
+    return this.isGold ? 0 : 40;
+  }
+
+  get finalTotal(): number {
+    return this.totalAmount - this.discountAmount + this.deliveryFee;
+  }
+
+  get potentialSavings(): number {
+    return Math.round(40 + this.totalAmount * 0.1);
   }
 }

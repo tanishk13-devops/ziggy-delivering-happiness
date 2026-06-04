@@ -68,6 +68,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
+  isGoldMember(): boolean {
+    return this.authService.isGoldMember();
+  }
+
   logout(): void {
     this.authService.logout();
     this.cartCount = 0;

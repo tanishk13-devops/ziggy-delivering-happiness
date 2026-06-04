@@ -45,6 +45,20 @@ export class AuthService {
     return this.userSubject.value;
   }
 
+  isGoldMember(): boolean {
+    const user = this.getCurrentUser();
+    if (!user) return false;
+    return localStorage.getItem(`is_gold_${user.email}`) === 'true';
+  }
+
+  setGoldMember(status: boolean): void {
+    const user = this.getCurrentUser();
+    if (user) {
+      localStorage.setItem(`is_gold_${user.email}`, String(status));
+      this.userSubject.next({ ...user });
+    }
+  }
+
   getToken(): string | null {
     return localStorage.getItem(this.tokenStorageKey);
   }

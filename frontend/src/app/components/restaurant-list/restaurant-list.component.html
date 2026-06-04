@@ -8,6 +8,25 @@
       <button (click)="load()">Search</button>
     </div>
 
+    <!-- Filter Pills Row -->
+    <div class="filter-container">
+      <button class="filter-pill" [class.active]="filterRating4" (click)="toggleFilterRating()">
+        ⭐ Rating 4.0+
+      </button>
+      <button class="filter-pill" [class.active]="filterPureVeg" (click)="toggleFilterPureVeg()">
+        🌱 Pure Veg
+      </button>
+      <button class="filter-pill" [class.active]="filterGold" (click)="toggleFilterGold()">
+        🏅 Gold Partners
+      </button>
+      <button class="filter-pill" [class.active]="filterCostSort !== 'none'" (click)="toggleCostSort()">
+        💰 Cost: 
+        <span *ngIf="filterCostSort === 'none'">All</span>
+        <span *ngIf="filterCostSort === 'lowToHigh'">Low to High</span>
+        <span *ngIf="filterCostSort === 'highToLow'">High to Low</span>
+      </button>
+    </div>
+
     <div class="filters-row">
       <select [(ngModel)]="selectedLocation" (change)="applyFilters()">
         <option value="">All locations</option>
@@ -21,7 +40,7 @@
         <option value="nameAsc">Name: A-Z</option>
       </select>
 
-      <button class="clear-btn" (click)="clearFilters()">Reset</button>
+      <button class="clear-btn" (click)="clearFilters()">Reset Filters</button>
     </div>
 
     <div class="results-count">Showing {{ restaurants.length }} restaurant(s)</div>
@@ -38,13 +57,28 @@
 
   <div class="grid" *ngIf="!loading">
     <a class="card" *ngFor="let restaurant of restaurants" [routerLink]="['/restaurant-menu', restaurant.id]">
-      <img [src]="restaurant.imageUrl || 'https://via.placeholder.com/500x280?text=Restaurant'" alt="restaurant" />
+      <div class="card-image-wrap">
+        <img [src]="restaurant.imageUrl || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'" alt="restaurant" />
+        <div class="card-badges">
+          <span class="badge-gold" *ngIf="restaurant.isGold">🏅 Gold Partner</span>
+          <span class="badge-veg" *ngIf="restaurant.isVeg">🌱 Veg</span>
+        </div>
+      </div>
       <div class="body">
-        <h3>{{ restaurant.name }}</h3>
-        <p>{{ restaurant.description }}</p>
+        <div class="card-title-row">
+          <h3>{{ restaurant.name }}</h3>
+          <span class="rating" 
+                [class.rating-high]="(restaurant.rating || 0) >= 4.0"
+                [class.rating-med]="(restaurant.rating || 0) >= 3.5 && (restaurant.rating || 0) < 4.0"
+                [class.rating-low]="(restaurant.rating || 0) < 3.5">
+            ⭐ {{ restaurant.rating || 'N/A' }}
+          </span>
+        </div>
+        <p class="cuisines-text">{{ restaurant.cuisines }}</p>
+        <p class="desc-text">{{ restaurant.description }}</p>
         <div class="meta">
-          <span>📍 {{ restaurant.location }}</span>
-          <span class="rating">⭐ {{ restaurant.rating }}</span>
+          <span class="location">📍 {{ restaurant.location }}</span>
+          <span class="cost-two">₹{{ restaurant.costForTwo }} for two</span>
         </div>
       </div>
     </a>

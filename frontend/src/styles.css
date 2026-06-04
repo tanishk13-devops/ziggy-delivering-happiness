@@ -1,19 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* Modern GenZ Style CSS */
+/* Lookmax Zomato Style CSS variables */
 :root {
-  --primary: #FF3366;
+  --primary: #E23744; /* Zomato Brand Crimson */
+  --primary-hover: #C92C37;
   --secondary: #7C3AED;
-  --background: #F8FAFC;
-  --surface: #FFFFFF;
-  --text: #0F172A;
-  --text-light: #64748B;
-  --radius-xl: 24px;
-  --radius-md: 16px;
-  --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --glass: rgba(255, 255, 255, 0.7);
-  --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  --gold: #E5BA73; /* Zomato Gold Golden */
+  --gold-dark: #C4923C;
+  --background: #0B0F19; /* Sleek premium dark background */
+  --surface: #151F32; /* Glass-dark card surface */
+  --text: #F8FAFC;
+  --text-light: #94A3B8;
+  --radius-xl: 20px;
+  --radius-md: 12px;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 15px 30px -5px rgba(0, 0, 0, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.5);
+  --glass: rgba(21, 31, 50, 0.75);
+  --gradient: linear-gradient(135deg, var(--primary) 0%, #FF5F6D 100%);
+  --gold-gradient: linear-gradient(135deg, #FCE38A 0%, var(--gold) 100%);
 }
 
 body {
@@ -22,17 +26,19 @@ body {
   background-color: var(--background);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
-  background-image: radial-gradient(at 0% 0%, hsla(347,100%,79%,0.15) 0px, transparent 50%),
-                    radial-gradient(at 100% 0%, hsla(262,83%,78%,0.15) 0px, transparent 50%);
-  background-attachment: scroll;
+  background-image: radial-gradient(at 0% 0%, hsla(354, 85%, 45%, 0.12) 0px, transparent 40%),
+                    radial-gradient(at 100% 0%, hsla(262, 85%, 45%, 0.1) 0px, transparent 40%),
+                    radial-gradient(at 50% 50%, hsla(43, 85%, 45%, 0.04) 0px, transparent 50%);
+  background-attachment: fixed;
+  background-size: cover;
 }
 
 /* Glassmorphism Containers */
 .glass-panel {
   background: var(--glass);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: var(--shadow-lg);
   border-radius: var(--radius-xl);
 }
@@ -48,11 +54,12 @@ h1, h2, h3, h4, h5, h6 {
 /* Inputs */
 input, select, textarea {
   font-family: 'Poppins', sans-serif;
-  background: var(--surface);
-  border: 1px solid #E2E8F0;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
   padding: 12px 16px;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  color: var(--text);
   transition: all 0.3s ease;
   width: 100%;
   box-sizing: border-box;
@@ -61,7 +68,8 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.2);
+  box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.25);
+  background: rgba(15, 23, 42, 0.85);
 }
 
 /* Buttons */
@@ -102,8 +110,8 @@ button:active {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 3px solid #e2e8f0;
-  border-top-color: #7c3aed;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--primary);
   animation: spin 0.8s linear infinite;
 }
 
@@ -114,7 +122,7 @@ button:active {
 .skeleton {
   position: relative;
   overflow: hidden;
-  background: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .skeleton::before {
@@ -122,10 +130,203 @@ button:active {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
   animation: shimmer 1.2s infinite;
 }
 
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }
+
+/* Premium Buttons & Typography */
+.btn {
+  padding: 10px 24px;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary {
+  background: var(--gradient);
+  color: #fff;
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(226, 55, 68, 0.35);
+  background: linear-gradient(135deg, #FF4B58 0%, #FF7F8A 100%);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Zomato Gold Badge & Portal Styles */
+.badge-gold {
+  background: var(--gold-gradient);
+  color: #0b0f19;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 0 10px rgba(229, 186, 115, 0.4);
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gold-gradient-text {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+/* Category Tab Bar Switcher (Zomato-Style) */
+.tab-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 15px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  font-size: 1rem;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  background: rgba(226, 55, 68, 0.08);
+  font-weight: 600;
+}
+
+.tab-btn.active.gold-active {
+  color: var(--gold);
+  background: rgba(229, 186, 115, 0.08);
+}
+
+/* Clean UI Filter Pills */
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 5px 0;
+}
+
+.filter-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.filter-pill.active {
+  background: rgba(226, 55, 68, 0.1);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* Digital Boarding Pass Ticket (Table Booking) */
+.ticket-pass {
+  background: linear-gradient(135deg, #1A2740 0%, #111A2D 100%);
+  border: 1px solid rgba(229, 186, 115, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+.ticket-pass::before, .ticket-pass::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--background);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ticket-pass::before { left: -10px; border-right: 1px solid rgba(229, 186, 115, 0.2); }
+.ticket-pass::after { right: -10px; border-left: 1px solid rgba(229, 186, 115, 0.2); }
+
+.ticket-divider {
+  border-top: 1px dashed rgba(229, 186, 115, 0.2);
+  margin: 15px 0;
+}
+
+/* Animated Map Tracker Elements */
+.map-canvas {
+  background: #111827;
+  border-radius: 16px;
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.map-road {
+  stroke-dasharray: 8;
+  animation: moveRoad 1.5s linear infinite;
+}
+
+@keyframes moveRoad {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+.scooter-node {
+  filter: drop-shadow(0 0 8px var(--primary));
+}
+

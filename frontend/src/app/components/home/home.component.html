@@ -3,112 +3,419 @@
     <p>{{ apiError }}</p>
   </section>
 
-  <section class="hero-section glass-panel">
-    <div class="brand-pill">🚀 Live Delivery Platform</div>
-    <h1>{{ title }} — Real food. Delivered fast.</h1>
-    <p class="typed-text">{{ animatedHeroText }}<span class="cursor">|</span></p>
+  <!-- Zomato Tab Switcher -->
+  <div class="tab-switcher glass-panel">
+    <button class="tab-btn" [class.active]="activeTab === 'delivery'" (click)="selectTab('delivery')">
+      🚴 Delivery
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'dining'" [class.gold-active]="authService.isGoldMember()" (click)="selectTab('dining')">
+      🍽️ Dining Out
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'nightlife'" (click)="selectTab('nightlife')">
+      🕺 Nightlife
+    </button>
+  </div>
 
-    <div class="cta-buttons">
+  <!-- Gold Portal Card -->
+  <div class="gold-portal-card glass-panel" [class.gold-member]="authService.isGoldMember()">
+    <div class="gold-portal-content">
+      <div class="gold-header-row">
+        <div class="gold-title-area">
+          <span class="badge-gold">🏅 Zomato Gold</span>
+          <h2>Experience Premium Dining & Delivery benefits</h2>
+        </div>
+        <div class="gold-action-area">
+          <button *ngIf="!authService.isGoldMember()" class="btn btn-primary gold-btn-cta" (click)="joinGold()">
+            Join Gold Now
+          </button>
+          <span *ngIf="authService.isGoldMember()" class="gold-active-status">✨ VIP Member Active</span>
+        </div>
+      </div>
+      <p class="gold-desc" *ngIf="!authService.isGoldMember()">
+        Get <strong class="gold-gradient-text">₹0 Delivery Fees</strong> on all orders and a flat <strong class="gold-gradient-text">10% Discount</strong> across partner restaurants and nightlife bookings.
+      </p>
+      <p class="gold-desc" *ngIf="authService.isGoldMember()">
+        Welcome back, VIP! Your Gold benefits are currently active. You enjoy <strong class="gold-gradient-text">₹0 delivery fee</strong> and a flat <strong class="gold-gradient-text">10% discount</strong> automatically applied at checkout!
+      </p>
+      <div class="gold-toast" *ngIf="goldMessage">
+        🎉 {{ goldMessage }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section (Universal but adapted to active tab) -->
+  <section class="hero-section glass-panel">
+    <div class="brand-pill" *ngIf="activeTab === 'delivery'">🚀 Premium Delivery Platform</div>
+    <div class="brand-pill" *ngIf="activeTab === 'dining'">🍽️ Premium Table Reservations</div>
+    <div class="brand-pill" *ngIf="activeTab === 'nightlife'">🕺 Exclusive Bars & Events</div>
+
+    <h1 *ngIf="activeTab === 'delivery'">{{ title }} — Real food. Delivered fast.</h1>
+    <h1 *ngIf="activeTab === 'dining'">{{ title }} — Skip the queues. Book tables.</h1>
+    <h1 *ngIf="activeTab === 'nightlife'">{{ title }} — Live events. Reserve entries.</h1>
+
+    <p class="typed-text" *ngIf="activeTab === 'delivery'">{{ animatedHeroText }}<span class="cursor">|</span></p>
+    <p class="typed-text" *ngIf="activeTab === 'dining'">Book a verified table instantly with no convenience fees.<span class="cursor">|</span></p>
+    <p class="typed-text" *ngIf="activeTab === 'nightlife'">Discover happening events, comedy standups, and live gigs around town.<span class="cursor">|</span></p>
+
+    <div class="cta-buttons" *ngIf="activeTab === 'delivery'">
       <a routerLink="/restaurants" class="btn btn-primary">Explore Restaurants</a>
-      <a routerLink="/register" class="btn btn-secondary">Create Free Account</a>
+      <a routerLink="/register" *ngIf="!authService.isLoggedIn()" class="btn btn-secondary">Create Free Account</a>
+    </div>
+    <div class="cta-buttons" *ngIf="activeTab === 'dining'">
+      <button (click)="selectTab('dining')" class="btn btn-primary">Find Dining Partner</button>
+    </div>
+    <div class="cta-buttons" *ngIf="activeTab === 'nightlife'">
+      <button (click)="selectTab('nightlife')" class="btn btn-primary">Browse Live Gigs</button>
     </div>
 
     <div class="hero-stats">
       <div class="stat-card">
         <span class="stat-value">{{ restaurantsCount }}+</span>
-        <span class="stat-label">Partner restaurants</span>
+        <span class="stat-label">Partner venues</span>
       </div>
       <div class="stat-card">
-        <span class="stat-value">20 min</span>
-        <span class="stat-label">Avg. delivery</span>
+        <span class="stat-value" *ngIf="activeTab === 'delivery'">20 min</span>
+        <span class="stat-value" *ngIf="activeTab !== 'delivery'">Instant</span>
+        <span class="stat-label" *ngIf="activeTab === 'delivery'">Avg. delivery</span>
+        <span class="stat-label" *ngIf="activeTab !== 'delivery'">Confirmation</span>
       </div>
       <div class="stat-card">
         <span class="stat-value">{{ deliveredOrdersCount }}+</span>
-        <span class="stat-label">Orders delivered</span>
+        <span class="stat-label" *ngIf="activeTab === 'delivery'">Orders delivered</span>
+        <span class="stat-label" *ngIf="activeTab !== 'delivery'">Bookings made</span>
       </div>
     </div>
   </section>
 
-  <section class="features glass-panel">
-    <h2>Why customers choose {{ title }}</h2>
-    <ul>
-      <li *ngFor="let feature of features">✨ {{ feature }}</li>
-    </ul>
-  </section>
+  <!-- ==================== TAB CONTENT: DELIVERY ==================== -->
+  <ng-container *ngIf="activeTab === 'delivery'">
+    <section class="features glass-panel">
+      <h2>Why customers choose {{ title }}</h2>
+      <ul>
+        <li *ngFor="let feature of features">✨ {{ feature }}</li>
+      </ul>
+    </section>
 
-  <section class="featured-section">
-    <div class="section-head">
-      <h2>Featured restaurants</h2>
-      <a routerLink="/restaurants">View all</a>
-    </div>
-
-    <div class="spinner-wrap" *ngIf="loadingFeatured">
-      <div class="loader-spinner"></div>
-    </div>
-
-    <div class="featured-grid" *ngIf="!loadingFeatured">
-      <a class="featured-card" *ngFor="let restaurant of featuredRestaurants" [routerLink]="['/restaurant-menu', restaurant.id]">
-        <img [src]="restaurant.imageUrl" [alt]="restaurant.name" />
-        <div class="overlay">
-          <h3>{{ restaurant.name }}</h3>
-          <p>📍 {{ restaurant.location }} · ⭐ {{ restaurant.rating }}</p>
-        </div>
-      </a>
-    </div>
-  </section>
-
-  <section class="carousel-section glass-panel">
-    <div class="section-head">
-      <h2>Trending now</h2>
-      <div class="controls">
-        <button class="control-btn btn-ripple" (click)="prevSlide()">‹</button>
-        <button class="control-btn btn-ripple" (click)="nextSlide()">›</button>
+    <section class="featured-section">
+      <div class="section-head">
+        <h2>Featured restaurants</h2>
+        <a routerLink="/restaurants">View all</a>
       </div>
-    </div>
 
-    <div class="spinner-wrap" *ngIf="loadingTrending">
-      <div class="loader-spinner"></div>
-    </div>
+      <div class="spinner-wrap" *ngIf="loadingFeatured">
+        <div class="loader-spinner"></div>
+      </div>
 
-    <div class="carousel-frame" *ngIf="!loadingTrending && trendingFoods.length">
-      <div class="carousel-track" [style.transform]="'translateX(-' + (activeSlide * 100) + '%)'">
-        <article class="slide" *ngFor="let food of trendingFoods">
-          <img [src]="getFoodImageUrl(food)" [alt]="food.name" (error)="onFoodImageError($event)" />
-          <div class="slide-body">
-            <h3>{{ food.name }}</h3>
-            <p>{{ food.description }}</p>
-            <span>₹{{ food.price }}</span>
+      <div class="featured-grid" *ngIf="!loadingFeatured">
+        <a class="featured-card" *ngFor="let restaurant of featuredRestaurants" [routerLink]="['/restaurant-menu', restaurant.id]">
+          <img [src]="restaurant.imageUrl" [alt]="restaurant.name" />
+          <div class="overlay">
+            <h3>{{ restaurant.name }}</h3>
+            <p>📍 {{ restaurant.location }} · ⭐ {{ restaurant.rating }}</p>
           </div>
-        </article>
+        </a>
       </div>
-    </div>
+    </section>
 
-    <div class="dots" *ngIf="!loadingTrending && trendingFoods.length > 1">
-      <button
-        *ngFor="let _ of trendingFoods; let i = index"
-        [class.active]="activeSlide === i"
-        (click)="goToSlide(i)">
-      </button>
-    </div>
-  </section>
+    <section class="carousel-section glass-panel">
+      <div class="section-head">
+        <h2>Trending now</h2>
+        <div class="controls">
+          <button class="control-btn btn-ripple" (click)="prevSlide()">‹</button>
+          <button class="control-btn btn-ripple" (click)="nextSlide()">›</button>
+        </div>
+      </div>
+
+      <div class="spinner-wrap" *ngIf="loadingTrending">
+        <div class="loader-spinner"></div>
+      </div>
+
+      <div class="carousel-frame" *ngIf="!loadingTrending && trendingFoods.length">
+        <div class="carousel-track" [style.transform]="'translateX(-' + (activeSlide * 100) + '%)'">
+          <article class="slide" *ngFor="let food of trendingFoods">
+            <img [src]="getFoodImageUrl(food)" [alt]="food.name" (error)="onFoodImageError($event)" />
+            <div class="slide-body">
+              <h3>{{ food.name }}</h3>
+              <p>{{ food.description }}</p>
+              <span>₹{{ food.price }}</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="dots" *ngIf="!loadingTrending && trendingFoods.length > 1">
+        <button
+          *ngFor="let _ of trendingFoods; let i = index"
+          [class.active]="activeSlide === i"
+          (click)="goToSlide(i)">
+        </button>
+      </div>
+    </section>
+  </ng-container>
+
+  <!-- ==================== TAB CONTENT: DINING OUT ==================== -->
+  <ng-container *ngIf="activeTab === 'dining'">
+    <section class="dining-section">
+      <!-- If a restaurant is selected for booking, show the booking form and/or ticket -->
+      <div class="booking-portal glass-panel" *ngIf="selectedRestaurantForBooking">
+        <div class="booking-portal-header">
+          <button class="btn btn-secondary btn-small" (click)="cancelBooking()">← Back to Partners</button>
+          <h3>Book table at {{ selectedRestaurantForBooking.name }}</h3>
+        </div>
+
+        <div class="booking-workspace" *ngIf="!bookingTicket">
+          <div class="booking-form">
+            <div class="form-group">
+              <label>Select Date</label>
+              <input type="date" [(ngModel)]="bookingDate" />
+            </div>
+
+            <div class="form-group">
+              <label>Time Slot</label>
+              <select [(ngModel)]="bookingTime">
+                <option value="12:30">12:30 PM (Lunch)</option>
+                <option value="13:30">01:30 PM (Lunch)</option>
+                <option value="19:00">07:00 PM (Dinner)</option>
+                <option value="19:30">07:30 PM (Dinner)</option>
+                <option value="20:30">08:30 PM (Dinner)</option>
+                <option value="21:30">09:30 PM (Dinner)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Number of Guests</label>
+              <select [(ngModel)]="bookingGuests">
+                <option [value]="1">1 Guest</option>
+                <option [value]="2">2 Guests</option>
+                <option [value]="3">3 Guests</option>
+                <option [value]="4">4 Guests</option>
+                <option [value]="6">6 Guests</option>
+                <option [value]="8">8 Guests</option>
+                <option [value]="10">10+ Guests</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary w-full mt-4" (click)="bookTable()">
+              Confirm Table Reservation
+            </button>
+          </div>
+        </div>
+
+        <!-- If table is booked, show boarding pass -->
+        <div class="booking-ticket-view" *ngIf="bookingTicket">
+          <div class="ticket-pass">
+            <div class="ticket-header">
+              <div class="gold-gradient-text text-lg font-bold">BOARDING PASS</div>
+              <div class="ticket-status-badge">CONFIRMED</div>
+            </div>
+            
+            <div class="ticket-divider"></div>
+            
+            <div class="ticket-body">
+              <div class="ticket-row">
+                <div class="ticket-col">
+                  <span class="label">VENUE</span>
+                  <span class="val">{{ bookingTicket.restaurantName }}</span>
+                </div>
+                <div class="ticket-col text-right">
+                  <span class="label">LOCATION</span>
+                  <span class="val">{{ bookingTicket.restaurantLocation }}</span>
+                </div>
+              </div>
+              
+              <div class="ticket-row mt-4">
+                <div class="ticket-col">
+                  <span class="label">DATE & TIME</span>
+                  <span class="val">{{ bookingTicket.date }} · {{ bookingTicket.time }}</span>
+                </div>
+                <div class="ticket-col text-right">
+                  <span class="label">GUESTS</span>
+                  <span class="val">{{ bookingTicket.guestsCount }} People</span>
+                </div>
+              </div>
+              
+              <div class="ticket-row mt-4">
+                <div class="ticket-col">
+                  <span class="label">PASSENGER / GUEST</span>
+                  <span class="val">{{ bookingTicket.guestName }}</span>
+                </div>
+                <div class="ticket-col text-right">
+                  <span class="label">TICKET ID</span>
+                  <span class="val font-mono">{{ bookingTicket.ticketId }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ticket-divider"></div>
+
+            <div class="ticket-footer text-center">
+              <p class="text-xs text-light">Show this pass at the reception. Happy Dining!</p>
+              <button class="btn btn-secondary mt-2" (click)="cancelBooking()">Book Another Table</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Otherwise show list of partner restaurants -->
+      <div class="partner-list-view" *ngIf="!selectedRestaurantForBooking">
+        <h2>Select dining partner restaurant</h2>
+        <div class="featured-grid" *ngIf="!loadingFeatured">
+          <div class="featured-card clickable-card" *ngFor="let restaurant of featuredRestaurants" (click)="startTableBooking(restaurant)">
+            <img [src]="restaurant.imageUrl" [alt]="restaurant.name" />
+            <div class="overlay">
+              <h3>{{ restaurant.name }}</h3>
+              <p>📍 {{ restaurant.location }} · ⭐ {{ restaurant.rating }}</p>
+              <button class="btn btn-primary btn-small mt-2">Book Table</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <!-- ==================== TAB CONTENT: NIGHTLIFE ==================== -->
+  <ng-container *ngIf="activeTab === 'nightlife'">
+    <section class="nightlife-section">
+      <!-- If booking tickets -->
+      <div class="booking-portal glass-panel" *ngIf="selectedEventForBooking">
+        <div class="booking-portal-header">
+          <button class="btn btn-secondary btn-small" (click)="cancelEventBooking()">← Back to Events</button>
+          <h3>Book entry ticket for {{ selectedEventForBooking.name }}</h3>
+        </div>
+
+        <div class="booking-workspace" *ngIf="!eventTicket">
+          <div class="booking-form">
+            <div class="event-details-snippet mb-4">
+              <p><strong>Venue:</strong> {{ selectedEventForBooking.venue }}</p>
+              <p><strong>Date & Time:</strong> {{ selectedEventForBooking.date }}</p>
+              <p><strong>Price per entry:</strong> ₹{{ selectedEventForBooking.price }}</p>
+              <p class="text-xs text-light">{{ selectedEventForBooking.description }}</p>
+            </div>
+
+            <div class="form-group">
+              <label>Number of Entries (Tickets)</label>
+              <select [(ngModel)]="eventTicketsCount">
+                <option [value]="1">1 Person</option>
+                <option [value]="2">2 People</option>
+                <option [value]="3">3 People</option>
+                <option [value]="4">4 People</option>
+                <option [value]="6">6 People</option>
+              </select>
+            </div>
+
+            <!-- Gold Discount note -->
+            <div class="gold-discount-note" *ngIf="authService.isGoldMember()">
+              🏅 Zomato Gold: Flat 10% discount applied! You save ₹{{ (selectedEventForBooking.price * eventTicketsCount * 0.1) | number:'1.0-0' }}
+            </div>
+
+            <button class="btn btn-primary w-full mt-4" (click)="bookEventTicket()">
+              Confirm Event Booking (Pay ₹{{ authService.isGoldMember() ? (selectedEventForBooking.price * eventTicketsCount * 0.9 | number:'1.0-0') : (selectedEventForBooking.price * eventTicketsCount) }})
+            </button>
+          </div>
+        </div>
+
+        <!-- Render digital entry ticket -->
+        <div class="booking-ticket-view" *ngIf="eventTicket">
+          <div class="ticket-pass nightlife-ticket">
+            <div class="ticket-header">
+              <div class="gold-gradient-text text-lg font-bold">NEON ENTRY TICKET</div>
+              <div class="ticket-status-badge vip-badge">VIP ACCESS</div>
+            </div>
+            
+            <div class="ticket-divider"></div>
+            
+            <div class="ticket-body">
+              <div class="ticket-row">
+                <div class="ticket-col">
+                  <span class="label">EVENT</span>
+                  <span class="val">{{ eventTicket.eventName }}</span>
+                </div>
+              </div>
+              
+              <div class="ticket-row mt-4">
+                <div class="ticket-col">
+                  <span class="label">VENUE</span>
+                  <span class="val">{{ eventTicket.venue }}</span>
+                </div>
+                <div class="ticket-col text-right">
+                  <span class="label">DATE</span>
+                  <span class="val text-sm">{{ eventTicket.date }}</span>
+                </div>
+              </div>
+              
+              <div class="ticket-row mt-4">
+                <div class="ticket-col">
+                  <span class="label">ENTRIES</span>
+                  <span class="val">{{ eventTicket.ticketsCount }} Persons</span>
+                </div>
+                <div class="ticket-col text-right">
+                  <span class="label">TICKET ID</span>
+                  <span class="val font-mono">{{ eventTicket.ticketId }}</span>
+                </div>
+              </div>
+
+              <div class="ticket-row mt-4">
+                <div class="ticket-col">
+                  <span class="label">GUEST</span>
+                  <span class="val">{{ eventTicket.guestName }}</span>
+                </div>
+                <div class="ticket-col text-right">
+                  <span class="label">TOTAL PAID</span>
+                  <span class="val text-primary font-bold">₹{{ eventTicket.finalPrice }}</span>
+                  <span class="val-saved text-xs text-light" *ngIf="eventTicket.discount > 0">(Saved ₹{{ eventTicket.discount }}!)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ticket-divider"></div>
+
+            <div class="ticket-footer text-center">
+              <p class="text-xs text-light">Show barcode / Ticket ID at the counter to redeem. Under 21 not allowed inside bar area.</p>
+              <button class="btn btn-secondary mt-2" (click)="cancelEventBooking()">Book Other Event</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events list -->
+      <div class="partner-list-view" *ngIf="!selectedEventForBooking">
+        <h2>Upcoming nightlife live gigs & comedy shows</h2>
+        <div class="events-grid">
+          <div class="event-card glass-panel" *ngFor="let ev of nightlifeEvents">
+            <img [src]="ev.image" [alt]="ev.name" />
+            <div class="event-body">
+              <span class="event-date">📅 {{ ev.date }}</span>
+              <h3>{{ ev.name }}</h3>
+              <p class="event-venue">📍 {{ ev.venue }}</p>
+              <p class="event-desc">{{ ev.description }}</p>
+              <div class="event-footer">
+                <span class="event-price">₹{{ ev.price }} <small>onwards</small></span>
+                <button class="btn btn-primary btn-small" (click)="startEventBooking(ev)">Book Entry</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
 
   <section class="flow-section">
     <h2>How it works</h2>
     <div class="flow-grid">
-      <article class="flow-card">
+      <article class="flow-card glass-panel">
         <span class="step">01</span>
-        <h3>Pick a restaurant</h3>
-        <p>Browse by location, rating, and cuisine style.</p>
+        <h3>Pick a service</h3>
+        <p>Choose between delivery, table reservation, or club/gigs tickets.</p>
       </article>
-      <article class="flow-card">
+      <article class="flow-card glass-panel">
         <span class="step">02</span>
-        <h3>Customize your meal</h3>
-        <p>Filter categories and add dishes to cart instantly.</p>
+        <h3>Confirm details</h3>
+        <p>Customize your food basket, reservation slots, or ticket quantities.</p>
       </article>
-      <article class="flow-card">
+      <article class="flow-card glass-panel">
         <span class="step">03</span>
-        <h3>Track order live</h3>
-        <p>Follow preparation and delivery from one dashboard.</p>
+        <h3>Seamless experience</h3>
+        <p>Get active order tracking or a premium glowing VIP boarding pass.</p>
       </article>
     </div>
   </section>

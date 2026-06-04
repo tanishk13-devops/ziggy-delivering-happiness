@@ -4,11 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FoodService } from '../../services/food.service';
 import { CartService } from '../../services/cart.service';
+import { RestaurantService } from '../../services/restaurant.service';
+import { AuthService } from '../../services/auth.service';
 import { Food } from '../../models/food.model';
 import { CartItem } from '../../models/cart.model';
+import { PremiumRestaurant } from '../restaurant-list/restaurant-list.component';
 
 interface MenuFoodItem extends Food {
   image: string;
+}
+
+interface Review {
+  author: string;
+  rating: number;
+  date: string;
+  comment: string;
 }
 
 @Component({
@@ -20,6 +30,7 @@ interface MenuFoodItem extends Food {
 })
 export class MenuComponent implements OnInit {
   restaurantId = 1;
+  restaurant: PremiumRestaurant | null = null;
   foods: MenuFoodItem[] = [];
   categories: string[] = [];
   selectedCategory = '';
@@ -30,6 +41,29 @@ export class MenuComponent implements OnInit {
   errorMessage = '';
   readonly skeletonItems = Array.from({ length: 8 });
   addSuccessMessage = '';
+
+  // Menu Tabs: Delivery vs Dining Booking vs Reviews
+  menuTab: 'delivery' | 'dining' | 'reviews' = 'delivery';
+
+  // Table Booking variables
+  bookingDate = '';
+  bookingTime = '19:30';
+  bookingGuests = 2;
+  bookingTicket: any = null;
+
+  // Mock Reviews
+  deliveryReviews: Review[] = [
+    { author: 'Rahul Sharma', rating: 5, date: 'Yesterday', comment: 'Fastest delivery ever! Food was piping hot and package was sealed nicely.' },
+    { author: 'Sneha Patel', rating: 4, date: '3 days ago', comment: 'Loved the Schezwan noodles. The portion was huge, could use a bit more spice.' },
+    { author: 'Amit Gupta', rating: 4.5, date: '1 week ago', comment: 'Dal Makhani was incredibly creamy. Standard delivery was prompt (around 22 minutes).' }
+  ];
+
+  diningReviews: Review[] = [
+    { author: 'Pooja Hegde', rating: 5, date: 'Last weekend', comment: 'Elegant ambiance, stellar light arrangement, and the live music was outstanding! Reservation was verified instantly.' },
+    { author: 'Vikram Singh', rating: 4.8, date: '2 weeks ago', comment: 'Extremely polite staff. The chef recommended special recipes. Perfect spot for family dinners.' },
+    { author: 'Nisha K.', rating: 4.2, date: '3 weeks ago', comment: 'Beautiful glass ceiling view. It gets quite crowded on Saturdays, so definitely book a table beforehand.' }
+  ];
+
   readonly defaultFoodImage = 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1200';
   readonly foodImageMap: Record<string, string> = {
     'paneer tikka': 'https://images.pexels.com/photos/7625056/pexels-photo-7625056.jpeg?auto=compress&cs=tinysrgb&w=1200',
@@ -78,14 +112,59 @@ export class MenuComponent implements OnInit {
   constructor(
     private foodService: FoodService,
     private cartService: CartService,
+    private restaurantService: RestaurantService,
+    public authService: AuthService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Set default booking date to today
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    this.bookingDate = `${yyyy}-${mm}-${dd}`;
+
     this.route.paramMap.subscribe(params => {
       this.restaurantId = Number(params.get('restaurantId') || 1);
+      this.loadRestaurantDetails();
       this.loadFoods();
+    });
+  }
+
+  loadRestaurantDetails(): void {
+    this.restaurantService.getRestaurant(this.restaurantId).subscribe({
+      next: (r) => {
+        const id = r.id || 1;
+        const costForTwo = ((id * 150) % 600) + 250;
+        const isVeg = id % 3 === 0;
+        const isGold = id % 2 === 0;
+
+        let cuisines = 'North Indian, Fast Food, Chinese';
+        if (id % 4 === 0) cuisines = 'North Indian, Biryani, Mughlai';
+        else if (id % 4 === 1) cuisines = 'Burgers, Fast Food, Beverages';
+        else if (id % 4 === 2) cuisines = 'Pizza, Italian, Fast Food';
+        else if (id % 4 === 3) cuisines = 'Chinese, Asian, Thai';
+
+        let knownFor = 'Stellar ambiance, live sports screening, and artisanal mocktails.';
+        if (id % 3 === 1) knownFor = 'Decadent desserts, organic ingredients, and prompt service.';
+        else if (id % 3 === 2) knownFor = 'Gourmet plating, authentic flavors, and family-friendly environment.';
+
+        let popularDishes = 'Classic Cheese Pizza, Truffle Fries, Blueberry Cheesecake';
+        if (id % 3 === 1) popularDishes = 'Paneer Tikka, Butter Chicken, Garlic Naan';
+        else if (id % 3 === 2) popularDishes = 'Schezwan Noodles, Spring Rolls, Dim Sums';
+
+        this.restaurant = {
+          ...r,
+          costForTwo,
+          cuisines,
+          isVeg,
+          isGold,
+          knownFor,
+          popularDishes
+        } as PremiumRestaurant;
+      }
     });
   }
 
@@ -112,6 +191,31 @@ export class MenuComponent implements OnInit {
 
   extractCategories(): void {
     this.categories = [...new Set(this.foods.map(f => f.category?.name || f.categoryName).filter(Boolean) as string[])];
+  }
+
+  setMenuTab(tab: 'delivery' | 'dining' | 'reviews'): void {
+    this.menuTab = tab;
+  }
+
+  // Table Reservation logic
+  bookTable(): void {
+    if (!this.authService.isLoggedIn()) {
+      alert('Please login to reserve a table.');
+      return;
+    }
+    this.bookingTicket = {
+      restaurantName: this.restaurant?.name || 'Restaurant Partner',
+      restaurantLocation: this.restaurant?.location || 'Nearby',
+      guestName: this.authService.getCurrentUser()?.name || 'Guest',
+      date: this.bookingDate,
+      time: this.bookingTime,
+      guestsCount: this.bookingGuests,
+      ticketId: 'ZG-' + Math.floor(100000 + Math.random() * 900000)
+    };
+  }
+
+  cancelBooking(): void {
+    this.bookingTicket = null;
   }
 
   filterByCategory(): void {

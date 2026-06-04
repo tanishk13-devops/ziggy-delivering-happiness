@@ -1,5 +1,5 @@
-<header class="topbar">
-	<div class="brand" routerLink="/home">{{ title }}</div>
+<header class="topbar glass-panel">
+	<div class="brand" routerLink="/home"><span class="red-text">Ziggy</span><span class="gold-gradient-text" *ngIf="isGoldMember()"> GOLD</span></div>
 
 	<nav class="nav-links">
 		<a routerLink="/home" routerLinkActive="active">Home</a>
@@ -14,14 +14,15 @@
 	</nav>
 
 	<div class="auth-actions" *ngIf="!authService.isLoggedIn(); else loggedInBlock">
-		<a routerLink="/login" class="btn btn-light">Login</a>
-		<a routerLink="/register" class="btn btn-solid">Sign Up</a>
+		<a routerLink="/login" class="btn btn-secondary">Login</a>
+		<a routerLink="/register" class="btn btn-primary">Sign Up</a>
 	</div>
 
 	<ng-template #loggedInBlock>
 		<div class="user-block">
 			<span class="welcome">Hi, {{ authService.getCurrentUser()?.name }}</span>
-			<button class="btn btn-solid" (click)="logout()">Logout</button>
+			<span class="badge-gold" *ngIf="isGoldMember()">🏅 Gold</span>
+			<button class="btn btn-secondary" (click)="logout()">Logout</button>
 		</div>
 	</ng-template>
 </header>

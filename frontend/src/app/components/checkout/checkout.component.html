@@ -1,43 +1,89 @@
 <div class="checkout-page">
-  <h1>Checkout</h1>
+  <div class="checkout-title-area glass-panel">
+    <h1>Secure Checkout</h1>
+    <p>Complete your delivery address and payment choice to place your order.</p>
+  </div>
+  
   <p *ngIf="error" class="error-text">{{ error }}</p>
 
   <div class="layout">
-    <section class="panel">
-      <h3>Delivery Address</h3>
-      <div *ngFor="let a of addresses" class="address-card">
-        <label>
-          <input type="radio" name="addr" [value]="a.id" [(ngModel)]="selectedAddressId" />
-          {{ a.street }}, {{ a.city }}, {{ a.state }} - {{ a.pincode }}
-        </label>
+    <!-- Left panel: address + payment selection -->
+    <section class="panel glass-panel">
+      <h3>Select Delivery Address</h3>
+      <div class="address-grid" *ngIf="addresses.length > 0">
+        <div *ngFor="let a of addresses" class="address-card" [class.selected]="selectedAddressId === a.id">
+          <label class="address-label">
+            <input type="radio" name="addr" [value]="a.id" [(ngModel)]="selectedAddressId" />
+            <div class="address-info">
+              <span class="street-info">{{ a.street }}</span>
+              <span class="city-info">{{ a.city }}, {{ a.state }} - {{ a.pincode }}</span>
+            </div>
+          </label>
+        </div>
+      </div>
+      
+      <p class="no-address-text" *ngIf="addresses.length === 0">No saved addresses found. Please add a delivery address below.</p>
+
+      <h4>Add New Address</h4>
+      <div class="address-form-grid">
+        <input placeholder="Street / House No." [(ngModel)]="newAddress.street" />
+        <input placeholder="City" [(ngModel)]="newAddress.city" />
+        <input placeholder="State" [(ngModel)]="newAddress.state" />
+        <input placeholder="Pincode" [(ngModel)]="newAddress.pincode" />
+        <button class="btn btn-primary btn-add-addr" (click)="addAddress()">Save Address</button>
       </div>
 
-      <h4>Add Address</h4>
-      <input placeholder="Street" [(ngModel)]="newAddress.street" />
-      <input placeholder="City" [(ngModel)]="newAddress.city" />
-      <input placeholder="State" [(ngModel)]="newAddress.state" />
-      <input placeholder="Pincode" [(ngModel)]="newAddress.pincode" />
-      <button class="btn-primary btn-ripple" (click)="addAddress()">Add Address</button>
-
-      <h3>Payment Method</h3>
-      <select [(ngModel)]="paymentMethod">
-        <option>UPI</option>
-        <option>Card</option>
-        <option>CashOnDelivery</option>
-      </select>
+      <h3>Choose Payment Method</h3>
+      <div class="payment-select-group">
+        <select class="payment-select" [(ngModel)]="paymentMethod">
+          <option value="UPI">UPI (Google Pay, PhonePe)</option>
+          <option value="Card">Credit or Debit Card</option>
+          <option value="CashOnDelivery">Cash on Delivery (COD)</option>
+        </select>
+      </div>
     </section>
 
-    <section class="panel">
+    <!-- Right panel: order summary pricing -->
+    <section class="panel glass-panel summary-panel">
       <h3>Order Summary</h3>
-      <div *ngFor="let item of cart.cartItems" class="line">
-        <span>{{ item.foodItem?.name || ('Item #' + item.foodItemId) }} x {{ item.quantity }}</span>
-        <b>₹{{ item.price * item.quantity }}</b>
+      
+      <div class="summary-items-list">
+        <div *ngFor="let item of cart.cartItems" class="line">
+          <span class="item-name">{{ item.foodItem?.name || ('Item #' + item.foodItemId) }} <small class="text-light">x {{ item.quantity }}</small></span>
+          <b class="item-total">₹{{ item.price * item.quantity }}</b>
+        </div>
       </div>
-      <hr/>
-      <h3>Total: ₹{{ total }}</h3>
-      <p *ngIf="!selectedAddressId" class="warn-text">Select an address to enable Place Order.</p>
-      <button class="btn-primary btn-ripple" [disabled]="loading || !cart.cartItems.length || !selectedAddressId" (click)="placeOrder()">
-        {{ loading ? 'Placing...' : 'Place Order' }}
+      
+      <hr class="summary-hr"/>
+      
+      <div class="checkout-breakdown">
+        <div class="checkout-row">
+          <span>Items Subtotal</span>
+          <span>₹{{ subtotal }}</span>
+        </div>
+        
+        <!-- Gold Discount -->
+        <div class="checkout-row gold-discount-row" *ngIf="isGold">
+          <span class="gold-text">🏅 Zomato Gold (10% Discount)</span>
+          <span class="gold-text">-₹{{ discountAmount }}</span>
+        </div>
+
+        <div class="checkout-row">
+          <span>Delivery Charges</span>
+          <span *ngIf="!isGold">₹40</span>
+          <span *ngIf="isGold" class="gold-free-delivery">₹0 <span class="badge-gold">GOLD FREE</span></span>
+        </div>
+
+        <div class="checkout-row checkout-grand-row">
+          <span>Total Payable</span>
+          <span class="payable-total">₹{{ finalTotal }}</span>
+        </div>
+      </div>
+
+      <p *ngIf="!selectedAddressId" class="warn-text">⚠️ Please select a delivery address to enable the "Place Order" button.</p>
+      
+      <button class="btn btn-primary w-full btn-place-order" [disabled]="loading || !cart.cartItems.length || !selectedAddressId" (click)="placeOrder()">
+        {{ loading ? 'Securing your order...' : 'Confirm & Place Order' }}
       </button>
     </section>
   </div>

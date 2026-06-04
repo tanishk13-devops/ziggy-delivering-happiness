@@ -7,6 +7,7 @@ import { Address } from '../../models/address.model';
 import { CartService } from '../../services/cart.service';
 import { AddressService } from '../../services/address.service';
 import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-checkout',
@@ -29,6 +30,7 @@ export class CheckoutComponent implements OnInit {
     private cartService: CartService,
     private addressService: AddressService,
     private orderService: OrderService,
+    public authService: AuthService,
     private router: Router
   ) {}
 
@@ -55,6 +57,10 @@ export class CheckoutComponent implements OnInit {
   }
 
   addAddress(): void {
+    if (!this.newAddress.street || !this.newAddress.city || !this.newAddress.state || !this.newAddress.pincode) {
+      this.error = 'Please fill out all address fields.';
+      return;
+    }
     this.addressService.addAddress(this.newAddress).subscribe({
       next: () => {
         this.newAddress = { street: '', city: '', state: '', pincode: '' };
@@ -104,7 +110,23 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
-  get total(): number {
+  get subtotal(): number {
     return this.cart.cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+  }
+
+  get isGold(): boolean {
+    return this.authService.isGoldMember();
+  }
+
+  get discountAmount(): number {
+    return this.isGold ? Math.round(this.subtotal * 0.1) : 0;
+  }
+
+  get deliveryFee(): number {
+    return this.isGold ? 0 : 40;
+  }
+
+  get finalTotal(): number {
+    return this.subtotal - this.discountAmount + this.deliveryFee;
   }
 }

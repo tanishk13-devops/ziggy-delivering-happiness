@@ -1,10 +1,13 @@
 <div class="cart-container">
-  <div class="cart-items-section">
+  <div class="cart-items-section glass-panel">
     <h2>Shopping Cart</h2>
     <p *ngIf="error" class="error-text">{{ error }}</p>
+    
     <div *ngIf="cart.cartItems.length === 0" class="empty-cart">
       Your cart is empty
+      <a routerLink="/restaurants" class="btn btn-primary mt-4">Browse Restaurants</a>
     </div>
+
     <table *ngIf="cart.cartItems.length > 0" class="cart-table">
       <thead>
         <tr>
@@ -17,22 +20,58 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of cart.cartItems">
-          <td>{{ item.foodItem?.name || ('Item #' + item.foodItemId) }}</td>
+          <td class="item-name-cell">{{ item.foodItem?.name || ('Item #' + item.foodItemId) }}</td>
           <td>₹{{ item.price }}</td>
           <td>
-            <input type="number" [(ngModel)]="item.quantity" (change)="updateQuantity(item.foodItemId, item.quantity)" min="1" />
+            <input type="number" class="quantity-input" [(ngModel)]="item.quantity" (change)="updateQuantity(item.foodItemId, item.quantity)" min="1" />
           </td>
-          <td>₹{{ item.price * item.quantity }}</td>
+          <td class="subtotal-cell">₹{{ item.price * item.quantity }}</td>
           <td>
             <button (click)="removeItem(item.foodItemId)" class="btn-remove btn-ripple">Remove</button>
           </td>
         </tr>
       </tbody>
     </table>
+
     <div *ngIf="cart.cartItems.length > 0" class="cart-summary">
-      <p><strong>Total Items:</strong> {{ totalItems }}</p>
-      <p><strong>Total Amount:</strong> ₹{{ totalAmount }}</p>
-      <button class="btn-order btn-ripple" (click)="checkout()">Proceed to Checkout</button>
+      <div class="pricing-breakdown">
+        <div class="price-row">
+          <span>Subtotal ({{ totalItems }} items)</span>
+          <span>₹{{ totalAmount }}</span>
+        </div>
+        
+        <!-- Gold discount -->
+        <div class="price-row gold-discount-row" *ngIf="isGold">
+          <span class="gold-text">🏅 Zomato Gold 10% Discount</span>
+          <span class="gold-text">-₹{{ discountAmount }}</span>
+        </div>
+
+        <div class="price-row">
+          <span>Delivery Fee</span>
+          <span *ngIf="!isGold">₹40</span>
+          <span *ngIf="isGold" class="gold-free-delivery">₹0 <span class="badge-gold font-xs">GOLD FREE</span></span>
+        </div>
+
+        <div class="price-row grand-total-row">
+          <span>Grand Total</span>
+          <span class="grand-total-val">₹{{ finalTotal }}</span>
+        </div>
+      </div>
+
+      <!-- Gold Banner inside summary -->
+      <div class="cart-gold-banner" [class.gold-active]="isGold">
+        <div *ngIf="!isGold" class="gold-upsell">
+          <p>Join Zomato Gold to save <strong>₹{{ potentialSavings }}</strong> instantly on this order!</p>
+          <a routerLink="/home" class="gold-link">Join Gold Now</a>
+        </div>
+        <div *ngIf="isGold" class="gold-success">
+          <p>🏅 Zomato Gold applied! You saved <strong>₹{{ discountAmount + 40 }}</strong> on this order.</p>
+        </div>
+      </div>
+
+      <div class="summary-actions">
+        <button class="btn-order btn-ripple btn-primary" (click)="checkout()">Proceed to Checkout</button>
+      </div>
     </div>
   </div>
 </div>

@@ -1,20 +1,97 @@
 <div class="tracking-container">
-  <h1>Order Tracking</h1>
+  <div class="tracking-header-area glass-panel">
+    <h1>Live Order Tracking</h1>
+    <p>Watch your food travel from the restaurant kitchen straight to your doorstep.</p>
+  </div>
 
-  <div *ngIf="loading" class="loading">Loading tracking details...</div>
+  <div *ngIf="loading" class="loading-wrap glass-panel">
+    <div class="loader-spinner"></div>
+    <p>Loading active deliveries...</p>
+  </div>
 
-  <div *ngIf="!loading && orders.length === 0" class="no-orders">
-    No orders found for tracking.
-    <a routerLink="/orders">Go to Orders</a>
+  <div *ngIf="!loading && orders.length === 0" class="no-orders glass-panel">
+    <h3>No active deliveries</h3>
+    <p>Place an order first to track it live!</p>
+    <a routerLink="/restaurants" class="btn btn-primary">Order Food Now</a>
   </div>
 
   <div class="tracking-list" *ngIf="!loading && orders.length > 0">
-    <div class="track-card" *ngFor="let order of orders">
+    <div class="track-card glass-panel" *ngFor="let order of orders">
       <div class="track-header">
-        <h3>Order #{{ order.id }}</h3>
-        <span class="status">{{ order.status }}</span>
+        <div>
+          <h3>Order #{{ order.id }}</h3>
+          <p class="timestamp">Placed on {{ order.createdAt | date:'medium' }}</p>
+        </div>
+        <div class="status-badge" [class.badge-completed]="order.status === 'Delivered'">
+          {{ order.status }}
+        </div>
       </div>
 
+      <!-- Live SVG Map tracker -->
+      <div class="map-wrapper">
+        <div class="map-canvas">
+          <svg width="100%" height="220" viewBox="0 0 600 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Grid background -->
+              <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <circle cx="15" cy="15" r="1.2" fill="rgba(255, 255, 255, 0.08)" />
+              </pattern>
+            </defs>
+            
+            <rect width="100%" height="100%" fill="url(#grid)" />
+
+            <!-- Main Route Path Curve -->
+            <path id="route-path" d="M 80,110 C 200,30 400,190 520,110" stroke="rgba(255, 255, 255, 0.12)" stroke-width="6" stroke-linecap="round" />
+            
+            <!-- Animated Dash Line Overlay when out for delivery -->
+            <path d="M 80,110 C 200,30 400,190 520,110" 
+                  stroke="var(--primary)" 
+                  stroke-dasharray="10 12"
+                  stroke-width="6" 
+                  stroke-linecap="round" 
+                  class="map-road" 
+                  *ngIf="order.status !== 'Pending' && order.status !== 'Delivered'" />
+
+            <!-- Restaurant Node Pin -->
+            <g transform="translate(80, 110)">
+              <circle r="24" fill="#152033" stroke="rgba(255, 255, 255, 0.1)" stroke-width="2.5" />
+              <circle r="18" fill="rgba(226, 55, 68, 0.1)" />
+              <text y="5" font-size="18" text-anchor="middle">🍕</text>
+              <text y="40" font-size="10" fill="var(--text-light)" font-weight="700" text-anchor="middle">KITCHEN</text>
+            </g>
+
+            <!-- Home Node Pin -->
+            <g transform="translate(520, 110)">
+              <circle r="24" fill="#152033" stroke="rgba(255, 255, 255, 0.1)" stroke-width="2.5" />
+              <circle r="18" fill="rgba(34, 197, 94, 0.1)" />
+              <text y="5" font-size="18" text-anchor="middle">🏠</text>
+              <text y="40" font-size="10" fill="var(--text-light)" font-weight="700" text-anchor="middle">YOUR HOME</text>
+            </g>
+
+            <!-- Dynamic Scooter Node -->
+            <g [attr.transform]="getScooterTransform(order.status)" class="scooter-node" *ngIf="order.status !== 'Delivered'">
+              <circle r="20" fill="var(--gold)" stroke="#fff" stroke-width="1.5" />
+              <text y="5" font-size="16" text-anchor="middle">🛵</text>
+            </g>
+
+            <!-- Delivered Check Node -->
+            <g transform="translate(520, 110)" class="scooter-node" *ngIf="order.status === 'Delivered'">
+              <circle r="20" fill="#22c55e" stroke="#fff" stroke-width="1.5" />
+              <text y="5" font-size="14" font-weight="900" fill="#fff" text-anchor="middle">✓</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Simulation Controller Button -->
+      <div class="simulation-bar">
+        <button class="btn btn-secondary btn-small btn-sim" (click)="startSimulation(order)">
+          ⚡ Simulate Delivery Ride
+        </button>
+        <span class="sim-tip">Click to test the real-time scooter animation on the map!</span>
+      </div>
+
+      <!-- Steps tracking list -->
       <div class="steps">
         <div class="step" *ngFor="let step of steps; let i = index" [class.done]="isStepDone(order.status, i)">
           <div class="dot">{{ i + 1 }}</div>
@@ -23,8 +100,8 @@
       </div>
 
       <div class="meta">
-        <p><strong>Address:</strong> {{ order.address?.street }}, {{ order.address?.city }}</p>
-        <p><strong>Total:</strong> ₹{{ order.totalAmount }}</p>
+        <p><strong>Delivery address:</strong> {{ order.address?.street }}, {{ order.address?.city }}</p>
+        <p><strong>Total bill amount:</strong> <span class="bill-total">₹{{ order.totalAmount }}</span></p>
       </div>
     </div>
   </div>

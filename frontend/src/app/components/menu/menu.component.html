@@ -1,72 +1,266 @@
 <div class="menu-container">
-  <h1>Restaurant Menu</h1>
-  
-  <div class="filters glass-panel sticky-bar">
-    <input
-      type="text"
-      [(ngModel)]="searchTerm"
-      (input)="onSearchChange()"
-      placeholder="Search dishes (name or description)"
-    />
+  <!-- Restaurant Hero Header Card -->
+  <div class="restaurant-hero-card glass-panel" *ngIf="restaurant">
+    <div class="hero-main-content">
+      <div class="hero-title-row">
+        <div>
+          <div class="hero-badge-row">
+            <span class="badge-gold" *ngIf="restaurant.isGold">🏅 Gold Partner</span>
+            <span class="badge-veg" *ngIf="restaurant.isVeg">🌱 Veg</span>
+          </div>
+          <h1>{{ restaurant.name }}</h1>
+          <p class="cuisines-text">{{ restaurant.cuisines }}</p>
+          <p class="location-text">📍 {{ restaurant.location }}</p>
+        </div>
+        <div class="hero-rating-area">
+          <span class="rating-badge"
+                [class.rating-high]="(restaurant.rating || 0) >= 4.0"
+                [class.rating-med]="(restaurant.rating || 0) >= 3.5 && (restaurant.rating || 0) < 4.0"
+                [class.rating-low]="(restaurant.rating || 0) < 3.5">
+            ⭐ {{ restaurant.rating || 'N/A' }}
+          </span>
+          <span class="rating-count">3.2k Ratings</span>
+        </div>
+      </div>
 
-    <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
-      <option value="">All Categories</option>
-      <option *ngFor="let category of categories">{{ category }}</option>
-    </select>
+      <!-- Stats Grid -->
+      <div class="hero-stats-panel">
+        <div class="stat-item">
+          <span class="stat-title">AVG COST FOR TWO</span>
+          <span class="stat-value">₹{{ restaurant.costForTwo }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-title">KNOWN FOR</span>
+          <span class="stat-desc">{{ restaurant.knownFor }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-title">POPULAR DISHES</span>
+          <span class="stat-desc">{{ restaurant.popularDishes }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <select [(ngModel)]="sortBy" (change)="onSortChange()">
-      <option value="recommended">Sort: Recommended</option>
-      <option value="priceLowToHigh">Price: Low to High</option>
-      <option value="priceHighToLow">Price: High to Low</option>
-      <option value="nameAsc">Name: A-Z</option>
-    </select>
-
-    <button class="btn-add btn-ripple" type="button" (click)="clearFilters()">Reset</button>
-    <a routerLink="/cart" class="btn-add btn-ripple">Go To Cart</a>
+  <!-- Menu Navigation Tabs -->
+  <div class="menu-tabs-bar glass-panel">
+    <button class="menu-tab-btn" [class.active]="menuTab === 'delivery'" (click)="setMenuTab('delivery')">
+      🚴 Order Online
+    </button>
+    <button class="menu-tab-btn" [class.active]="menuTab === 'dining'" (click)="setMenuTab('dining')">
+      🍽️ Book a Table
+    </button>
+    <button class="menu-tab-btn" [class.active]="menuTab === 'reviews'" (click)="setMenuTab('reviews')">
+      ⭐ Reviews
+    </button>
   </div>
 
   <p *ngIf="addSuccessMessage" class="success-pop">{{ addSuccessMessage }}</p>
   <p *ngIf="!loading && errorMessage" class="result-text">{{ errorMessage }}</p>
-  <p class="result-text" *ngIf="!loading">Showing {{ filteredFoods.length }} item(s)</p>
 
-  <div *ngIf="loading" class="loading-stack">
-    <div class="loader-spinner"></div>
-    <p class="loading">Loading menu...</p>
-
-    <div class="food-grid">
-      <article class="skeleton-card" *ngFor="let _ of skeletonItems">
-        <div class="skeleton skeleton-image"></div>
-        <div class="skeleton skeleton-line"></div>
-        <div class="skeleton skeleton-line short"></div>
-      </article>
-    </div>
-  </div>
-
-  <div class="food-grid" *ngIf="!loading">
-    <div *ngIf="filteredFoods.length === 0" class="no-items">No items available</div>
-
-    <article class="menu-food-card" *ngFor="let item of filteredFoods; let i = index; trackBy: trackByFood">
-      <img
-        class="menu-food-image"
-        [src]="item.image"
-        [alt]="item.name"
-        loading="lazy"
-        decoding="async"
-        (error)="onImageError(item, i)"
+  <!-- ==================== TAB CONTENT: ORDER ONLINE ==================== -->
+  <ng-container *ngIf="menuTab === 'delivery'">
+    <div class="filters glass-panel sticky-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        placeholder="Search dishes (name or description)"
       />
 
-      <div class="menu-food-body">
-        <h3>{{ item.name }}</h3>
-        <p class="menu-food-category">{{ item.category?.name || item.categoryName || 'Category' }}</p>
-        <p class="menu-food-description">{{ item.description }}</p>
+      <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+        <option value="">All Categories</option>
+        <option *ngFor="let category of categories">{{ category }}</option>
+      </select>
 
-        <div class="menu-food-footer">
-          <span class="menu-food-price">₹{{ item.price }}</span>
-          <button class="btn-add btn-ripple" type="button" [disabled]="item.isAvailable === false" (click)="addToCart(item)">
-            {{ item.isAvailable === false ? 'Out of Stock' : 'Add to Cart' }}
-          </button>
+      <select [(ngModel)]="sortBy" (change)="onSortChange()">
+        <option value="recommended">Sort: Recommended</option>
+        <option value="priceLowToHigh">Price: Low to High</option>
+        <option value="priceHighToLow">Price: Low to High</option>
+        <option value="nameAsc">Name: A-Z</option>
+      </select>
+
+      <button class="btn-reset btn-ripple" type="button" (click)="clearFilters()">Reset</button>
+      <a routerLink="/cart" class="btn-cart btn-ripple">Go To Cart</a>
+    </div>
+
+    <p class="result-text" *ngIf="!loading">Showing {{ filteredFoods.length }} item(s)</p>
+
+    <div *ngIf="loading" class="loading-stack">
+      <div class="loader-spinner"></div>
+      <p class="loading">Loading menu...</p>
+
+      <div class="food-grid">
+        <article class="skeleton-card" *ngFor="let _ of skeletonItems">
+          <div class="skeleton skeleton-image"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line short"></div>
+        </article>
+      </div>
+    </div>
+
+    <div class="food-grid" *ngIf="!loading">
+      <div *ngIf="filteredFoods.length === 0" class="no-items">No items available</div>
+
+      <article class="menu-food-card" *ngFor="let item of filteredFoods; let i = index; trackBy: trackByFood">
+        <img
+          class="menu-food-image"
+          [src]="item.image"
+          [alt]="item.name"
+          loading="lazy"
+          decoding="async"
+          (error)="onImageError(item, i)"
+        />
+
+        <div class="menu-food-body">
+          <h3>{{ item.name }}</h3>
+          <p class="menu-food-category">{{ item.category?.name || item.categoryName || 'Category' }}</p>
+          <p class="menu-food-description">{{ item.description }}</p>
+
+          <div class="menu-food-footer">
+            <span class="menu-food-price">₹{{ item.price }}</span>
+            <button class="btn-add btn-ripple" type="button" [disabled]="item.isAvailable === false" (click)="addToCart(item)">
+              {{ item.isAvailable === false ? 'Out of Stock' : 'Add to Cart' }}
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </ng-container>
+
+  <!-- ==================== TAB CONTENT: BOOK A TABLE ==================== -->
+  <ng-container *ngIf="menuTab === 'dining'">
+    <div class="dining-workspace-menu glass-panel">
+      <div class="booking-portal-header" *ngIf="bookingTicket">
+        <button class="btn btn-secondary btn-small" (click)="cancelBooking()">← Reset Booking</button>
+        <h3>Your Reservation Pass</h3>
+      </div>
+
+      <!-- If ticket is not confirmed yet, show booking inputs -->
+      <div class="booking-form-menu" *ngIf="!bookingTicket">
+        <h3>Reserve a table instantly</h3>
+        <p class="subtitle">Enjoy complimentary dessert for bookings made under Gold Partners</p>
+
+        <div class="form-grid-menu">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" [(ngModel)]="bookingDate" />
+          </div>
+
+          <div class="form-group">
+            <label>Time Slot</label>
+            <select [(ngModel)]="bookingTime">
+              <option value="12:30">12:30 PM (Lunch)</option>
+              <option value="13:30">01:30 PM (Lunch)</option>
+              <option value="19:00">07:00 PM (Dinner)</option>
+              <option value="19:30">07:30 PM (Dinner)</option>
+              <option value="20:30">08:30 PM (Dinner)</option>
+              <option value="21:30">09:30 PM (Dinner)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>No. of Guests</label>
+            <select [(ngModel)]="bookingGuests">
+              <option [value]="1">1 Guest</option>
+              <option [value]="2">2 Guests</option>
+              <option [value]="3">3 Guests</option>
+              <option [value]="4">4 Guests</option>
+              <option [value]="6">6 Guests</option>
+              <option [value]="8">8 Guests</option>
+              <option [value]="10">10+ Guests</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-book" (click)="bookTable()">Confirm Table Reservation</button>
+      </div>
+
+      <!-- If table is booked, show ticket boarding pass -->
+      <div class="booking-ticket-view" *ngIf="bookingTicket">
+        <div class="ticket-pass">
+          <div class="ticket-header">
+            <div class="gold-gradient-text text-lg font-bold">BOARDING PASS</div>
+            <div class="ticket-status-badge">CONFIRMED</div>
+          </div>
+          
+          <div class="ticket-divider"></div>
+          
+          <div class="ticket-body">
+            <div class="ticket-row">
+              <div class="ticket-col">
+                <span class="label">VENUE</span>
+                <span class="val">{{ bookingTicket.restaurantName }}</span>
+              </div>
+              <div class="ticket-col text-right">
+                <span class="label">LOCATION</span>
+                <span class="val">{{ bookingTicket.restaurantLocation }}</span>
+              </div>
+            </div>
+            
+            <div class="ticket-row mt-4">
+              <div class="ticket-col">
+                <span class="label">DATE & TIME</span>
+                <span class="val">{{ bookingTicket.date }} · {{ bookingTicket.time }}</span>
+              </div>
+              <div class="ticket-col text-right">
+                <span class="label">GUESTS</span>
+                <span class="val">{{ bookingTicket.guestsCount }} People</span>
+              </div>
+            </div>
+            
+            <div class="ticket-row mt-4">
+              <div class="ticket-col">
+                <span class="label">PASSENGER / GUEST</span>
+                <span class="val">{{ bookingTicket.guestName }}</span>
+              </div>
+              <div class="ticket-col text-right">
+                <span class="label">TICKET ID</span>
+                <span class="val font-mono">{{ bookingTicket.ticketId }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-divider"></div>
+
+          <div class="ticket-footer text-center">
+            <p class="text-xs text-light">Show this pass at reception. Happy Dining!</p>
+            <button class="btn btn-secondary mt-2" (click)="cancelBooking()">Book Another Table</button>
+          </div>
         </div>
       </div>
-    </article>
-  </div>
+    </div>
+  </ng-container>
+
+  <!-- ==================== TAB CONTENT: REVIEWS ==================== -->
+  <ng-container *ngIf="menuTab === 'reviews'">
+    <div class="reviews-workspace">
+      <div class="reviews-grid-split">
+        <!-- Delivery Reviews -->
+        <div class="reviews-column glass-panel">
+          <h3>Delivery Reviews</h3>
+          <div class="review-card" *ngFor="let rev of deliveryReviews">
+            <div class="review-header">
+              <span class="reviewer-name">{{ rev.author }}</span>
+              <span class="review-stars">⭐ {{ rev.rating }}</span>
+            </div>
+            <p class="review-date">{{ rev.date }}</p>
+            <p class="review-comment">"{{ rev.comment }}"</p>
+          </div>
+        </div>
+
+        <!-- Dining Reviews -->
+        <div class="reviews-column glass-panel">
+          <h3>Dining-out Reviews</h3>
+          <div class="review-card" *ngFor="let rev of diningReviews">
+            <div class="review-header">
+              <span class="reviewer-name">{{ rev.author }}</span>
+              <span class="review-stars">⭐ {{ rev.rating }}</span>
+            </div>
+            <p class="review-date">{{ rev.date }}</p>
+            <p class="review-comment">"{{ rev.comment }}"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 </div>

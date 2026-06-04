@@ -16,7 +16,10 @@ export class OrderTrackingComponent implements OnInit {
   loading = true;
   orderId?: number;
 
-  steps = ['Pending', 'Accepted', 'Preparing', 'OutForDelivery', 'Delivered'];
+  steps: ('Pending' | 'Accepted' | 'Preparing' | 'OutForDelivery' | 'Delivered')[] = ['Pending', 'Accepted', 'Preparing', 'OutForDelivery', 'Delivered'];
+
+  // Keep track of active intervals for simulation
+  private simulations: Record<number, any> = {};
 
   constructor(
     private orderService: OrderService,
@@ -77,5 +80,46 @@ export class OrderTrackingComponent implements OnInit {
   isStepDone(status: string, stepIndex: number): boolean {
     const current = this.getStepIndex(status);
     return current >= stepIndex;
+  }
+
+  // Get scooter SVG translation based on status
+  getScooterTransform(status: string): string {
+    switch (status) {
+      case 'Pending':
+        return 'translate(80, 110)';
+      case 'Accepted':
+        return 'translate(170, 82)';
+      case 'Preparing':
+        return 'translate(260, 85)';
+      case 'OutForDelivery':
+        return 'translate(390, 135)';
+      case 'Delivered':
+        return 'translate(520, 110)';
+      default:
+        return 'translate(80, 110)';
+    }
+  }
+
+  // Simulator to demonstrate scooter movement on the SVG road
+  startSimulation(order: Order): void {
+    if (!order.id) return;
+    
+    // Clear any existing simulation for this order
+    if (this.simulations[order.id]) {
+      clearInterval(this.simulations[order.id]);
+    }
+
+    order.status = 'Pending';
+    let index = 0;
+
+    this.simulations[order.id] = setInterval(() => {
+      index++;
+      if (index < this.steps.length) {
+        order.status = this.steps[index];
+      } else {
+        clearInterval(this.simulations[order.id!]);
+        delete this.simulations[order.id!];
+      }
+    }, 2500);
   }
 }
