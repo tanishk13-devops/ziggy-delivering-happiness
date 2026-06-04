@@ -1,22 +1,23 @@
 services:
   - type: web
-    name: ziggy-api
+    name: ziggy-app
     env: docker
-    rootDir: backend
+    dockerContext: .
+    dockerfilePath: Dockerfile
     autoDeploy: true
     healthCheckPath: /health
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: EnableSwagger
-        value: "false"
+        value: "true"
+      - key: UseInMemoryDatabase
+        value: "true"
       - key: DATABASE_URL
-        sync: false
+        value: ""
       - key: Jwt__Key
-        sync: false
+        value: "SelectAStrongKeyForYourJwtTokensAtLeast32CharsLong!"
       - key: Jwt__Issuer
         value: FoodDeliveryAPI
       - key: Jwt__Audience
         value: FoodDeliveryAPI.Client
-      - key: CORS__ALLOWED_ORIGINS
-        sync: false

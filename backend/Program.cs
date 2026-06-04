@@ -189,15 +189,13 @@ try
     app.UseCors("AllowAll");
     app.UseAuthentication();
     app.UseAuthorization();
-    app.MapGet("/", () => Results.Ok(new
-    {
-        service = "ziggy-api",
-        status = "ok",
-        docs = "/health",
-        api = "/api/restaurants"
-    }));
+
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+
     app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "ziggy-api" }));
     app.MapControllers();
+    app.MapFallbackToFile("index.html");
 
     if (seedDataOnStartup)
     {

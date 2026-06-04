@@ -1,174 +1,104 @@
-# Ziggy - Production-Style Online Food Delivery System
+# 🚀 Ziggy: Delivering Happiness
 
-This project is upgraded to a Swiggy/Zomato-style architecture with restaurant-first browsing, JWT auth, role-based APIs, cart + checkout + payment flow, and admin operations.
+Ziggy is a production-grade, full-stack online food delivery application (similar to Swiggy or Zomato) engineered with a robust .NET Web API backend and a responsive Angular SPA frontend. 
 
-## Stack
-
-- Frontend: Angular 17
-- Backend: ASP.NET Core Web API + EF Core
-- Database: PostgreSQL by default (compatible patterns for SQL Server/MySQL)
-- Auth: JWT + Roles (`Admin`, `Customer`, `DeliveryAgent`)
-- Deployment: Vercel (frontend), Render/Azure (backend)
-- CI/CD: GitHub Actions ([.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml))
-
-## Architecture
-
-Controller -> Service Layer -> Repository -> EF Core -> Database
-
-Backend folders:
-
-- Controllers
-- Services/Interfaces, Services/Implementations
-- Repositories/Interfaces, Repositories/Implementations
-- Models
-- DTOs
-- Helpers
-
-## Core Modules Delivered
-
-1. Restaurant module (`Restaurant` -> many `Food` items)
-2. Food menu management (admin create/update/delete)
-3. Cart module (`Cart`, `CartItem`)
-4. Order module + status workflow (`Pending -> Accepted -> Preparing -> OutForDelivery -> Delivered`)
-5. Address module (multiple addresses per user)
-6. Payment module (`UPI`, `Card`, `CashOnDelivery`)
-7. Reviews & ratings
-8. JWT Authentication + Authorization with roles
-9. Admin dashboard APIs
-10. Angular pages for customer/admin flows
-
-## API Endpoints
-
-### Auth
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-
-### Restaurants
-- `GET /api/restaurants?search=`
-- `GET /api/restaurants/{id}`
-- `POST /api/restaurants` (Admin)
-- `PUT /api/restaurants/{id}` (Admin)
-- `DELETE /api/restaurants/{id}` (Admin)
-
-### Food Items
-- `GET /api/food-items/restaurant/{restaurantId}`
-- `GET /api/food-items/{id}`
-- `POST /api/food-items` (Admin)
-- `PUT /api/food-items/{id}` (Admin)
-- `DELETE /api/food-items/{id}` (Admin)
-
-### Cart
-- `GET /api/cart`
-- `POST /api/cart/items`
-- `PUT /api/cart/items/{foodItemId}`
-- `DELETE /api/cart/items/{foodItemId}`
-
-### Orders
-- `POST /api/orders` (Place order from cart)
-- `GET /api/orders/my-history`
-- `GET /api/orders/{id}`
-- `GET /api/orders/{id}/track`
-- `GET /api/orders` (Admin/DeliveryAgent)
-- `PATCH /api/orders/{id}/status` (Admin/DeliveryAgent)
-
-### Addresses
-- `GET /api/addresses`
-- `POST /api/addresses`
-- `DELETE /api/addresses/{id}`
-
-### Payments
-- `GET /api/payments/order/{orderId}`
-- `PATCH /api/payments/order/{orderId}` (Admin)
-
-### Reviews
-- `GET /api/reviews/restaurant/{restaurantId}`
-- `POST /api/reviews`
-
-### Admin
-- `GET /api/admin/dashboard`
-- `GET /api/admin/orders`
-- `GET /api/admin/customer-activity`
-
-## Database Schema (High Level)
-
-- `Users` (Id, Name, Email, PasswordHash, Role, CreatedAt)
-- `Restaurants` (Id, Name, Description, Location, Rating, ImageUrl, CreatedAt)
-- `FoodCategories` (Id, Name)
-- `Foods` (Id, Name, Description, Price, CategoryId, RestaurantId, ImageUrl, IsAvailable, CreatedAt)
-- `Carts` (Id, UserId, CreatedAt)
-- `CartItems` (Id, CartId, FoodItemId, Quantity, Price)
-- `Addresses` (Id, UserId, Street, City, State, Pincode)
-- `Orders` (Id, UserId, AddressId, TotalAmount, Status, CreatedAt)
-- `OrderItems` (Id, OrderId, FoodItemId, Quantity, Price)
-- `Payments` (Id, OrderId, PaymentMethod, PaymentStatus, Amount, CreatedAt)
-- `Reviews` (Id, UserId, RestaurantId, Rating, Comment, CreatedAt)
-
-## Angular Service Files
-
-- [src/app/services/auth.service.ts](frontend/src/app/services/auth.service.ts)
-- [src/app/services/restaurant.service.ts](frontend/src/app/services/restaurant.service.ts)
-- [src/app/services/food.service.ts](frontend/src/app/services/food.service.ts)
-- [src/app/services/cart.service.ts](frontend/src/app/services/cart.service.ts)
-- [src/app/services/address.service.ts](frontend/src/app/services/address.service.ts)
-- [src/app/services/order.service.ts](frontend/src/app/services/order.service.ts)
-- [src/app/services/payment.service.ts](frontend/src/app/services/payment.service.ts) *(can be added similarly as needed)*
-- [src/app/services/review.service.ts](frontend/src/app/services/review.service.ts)
-- [src/app/services/admin.service.ts](frontend/src/app/services/admin.service.ts)
-
-## Sample Seed Users
-
-- Admin: `admin@ziggy.com` / `Admin@123`
-- Customer: `customer@ziggy.com` / `Customer@123`
-- DeliveryAgent: `delivery@ziggy.com` / `Delivery@123`
-
-## Local Run
-
-Backend:
-
-1. `cd backend`
-2. `dotnet restore`
-3. `dotnet run`
-
-Frontend:
-
-1. `cd frontend`
-2. `npm install`
-3. `npm start`
-
-## Deployment
-
-### Frontend -> Vercel
-
-- Build command: `npm run build`
-- Output: `dist/food-delivery-app`
-- Set `environment.prod.ts` API URL to backend URL
-
-### Backend -> Render/Azure
-
-- Configure `DATABASE_URL` or `ConnectionStrings__DefaultConnection`
-- Configure JWT values:
-  - `Jwt__Key`
-  - `Jwt__Issuer`
-  - `Jwt__Audience`
-- Optional CORS env: `CORS__ALLOWED_ORIGINS`
-
-### CI/CD
-
-GitHub Actions pipeline includes:
-
-1. Restore dependencies
-2. Build backend/frontend
-3. Run tests
-4. Publish and upload artifacts
-
-## License
-
-MIT License - Feel free to use this project for learning and development.
-
-## Support
-
-For issues and questions, please open an issue in the repository.
+It is designed for **unified single-container hosting**, allowing the entire frontend and backend to build and run together as a single service.
 
 ---
 
+## 🌟 Features & Stack
+
+* **Frontend**: Angular 17 SPA, responsive layout, dynamic cart, checkout flows, and real-time order tracking.
+* **Backend**: ASP.NET Core Web API + EF Core + In-Memory/PostgreSQL database compatibility.
+* **Security**: JWT Authentication & Role-Based Authorization (`Admin`, `Customer`, `DeliveryAgent`).
+* **Visual Excellence**: Curated, harmonious color palette with 25 unique seeded restaurants and 250 dishes loaded with authentic high-resolution images.
+* **Deploy-Ready**: Fully configured Docker file and Render blueprint for one-click free hosting.
+
+---
+
+## 🚀 One-Click Cloud Hosting (Free)
+
+You can deploy the entire application (both frontend and backend) for **free** on Render with zero configuration:
+
+1. Create a free account on [Render](https://render.com/).
+2. Click **New +** (top right) -> **Blueprint**.
+3. Connect your repository: `ziggy-delivering-happiness`.
+4. Click **Approve** and let Render build and host the app. It will use the root `Dockerfile` to compile both frontend and backend together and serve it instantly!
+
+---
+
+## 💻 Local Running & Development
+
+You can run the application locally on your machine with no external databases required (defaults to In-Memory mode).
+
+### Prerequisite
+* [.NET 8.0 SDK](https://dotnet.microsoft.com/download)
+* [Node.js 18+](https://nodejs.org/)
+
+### 1. Running Backend & Frontend Together (Easiest)
+Navigate to the root directory and build/run:
+
+```bash
+# 1. Compile the Angular frontend
+cd frontend
+npm install
+npm run build:prod
+
+# 2. Start the combined application
+cd ../backend
+dotnet run --launch-profile http
+```
+The application will be live at: **`http://localhost:5000`** (serving both the API and the Angular frontend page!).
+
+---
+
+### 2. Separate Development Mode (For Live Coding)
+If you want to edit code and see changes in real-time:
+
+#### Backend API:
+```bash
+cd backend
+dotnet run --launch-profile http
+# API live at http://localhost:5000
+# Swagger UI docs at http://localhost:5000/swagger
+```
+
+#### Frontend SPA:
+```bash
+cd frontend
+npm install
+npm start
+# App live at http://localhost:4200 (reloads automatically on edit)
+```
+
+---
+
+## 🔑 Sample Test Accounts
+
+* **Admin User**: `admin@ziggy.com` / `Admin@123`
+* **Customer User**: `customer@ziggy.com` / `Customer@123`
+* **Delivery Agent User**: `delivery@ziggy.com` / `Delivery@123`
+
+---
+
+## 📂 Project Structure
+
+```text
+ziggy-delivering-happiness/
+├── frontend/                 # Angular 17 client code
+│   ├── src/                  # App components, services, environments
+│   ├── angular.json          # Angular CLI workspace config
+│   └── package.json          # Frontend dependencies & scripts
+├── backend/                  # ASP.NET Core 8 Web API
+│   ├── Controllers/          # API Controllers
+│   ├── Models/               # C# database entities
+│   ├── Data/                 # DbContext and EF settings
+│   ├── Program.cs            # App configuration and entry point
+│   └── appsettings.json      # Backend application configurations
+├── Dockerfile                # Root multi-stage Docker build pipeline
+├── render.yaml               # Render blueprint file
+└── README.md                 # Project documentation
+```
+
+---
 **Happy Coding! 🚀**
