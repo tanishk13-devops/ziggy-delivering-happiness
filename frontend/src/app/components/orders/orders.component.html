@@ -1,0 +1,60 @@
+<div class="orders-container">
+  <h1>My Orders</h1>
+  
+  <div *ngIf="loading" class="loading">
+    <div class="loader-spinner"></div>
+    <p>Loading orders...</p>
+  </div>
+
+  <div *ngIf="!loading && orders.length === 0" class="no-orders">
+    You haven't placed any orders yet
+  </div>
+
+  <div class="orders-list" *ngIf="!loading && orders.length > 0">
+    <div class="order-card" *ngFor="let order of orders">
+      <div class="order-header">
+        <div>
+          <h3>Order #{{ order.id }}</h3>
+          <p>{{ order.createdAt | date: 'MMM dd, yyyy HH:mm' }}</p>
+        </div>
+        <span class="status" [style.background-color]="getStatusColor(order.status)">{{ order.status }}</span>
+      </div>
+
+      <div class="order-details">
+        <div class="detail-item">
+          <strong>Delivery Address:</strong>
+          {{ order.address?.street }}, {{ order.address?.city }}, {{ order.address?.state }} - {{ order.address?.pincode }}
+        </div>
+        <div class="detail-item"><strong>Payment:</strong> {{ order.payment?.paymentMethod }} ({{ order.payment?.paymentStatus }})</div>
+      </div>
+
+      <div class="order-items">
+        <h4>Items:</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of order.items">
+              <td>{{ item.foodItem?.name || ('Item #' + item.foodItemId) }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>₹{{ item.price }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="order-total">
+        <strong>Total: ₹{{ order.totalAmount }}</strong>
+      </div>
+
+      <div class="track-row">
+        <a class="track-btn btn-ripple" [routerLink]="['/order-tracking']" [queryParams]="{ orderId: order.id }">Track Order</a>
+      </div>
+    </div>
+  </div>
+</div>

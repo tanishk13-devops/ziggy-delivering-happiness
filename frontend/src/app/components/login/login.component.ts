@@ -1,0 +1,62 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent {
+  email = '';
+  password = '';
+  loading = false;
+  error = '';
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  login(): void {
+    const email = this.email.trim().toLowerCase();
+    const password = this.password.trim();
+
+    if (!email || !password) {
+      this.error = 'Please fill in all fields';
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+    this.authService.login({ email, password })
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          this.error = '';
+          this.router.navigate(['/restaurants']);
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = this.extractError(err, 'Login failed. Please check your email and password.');
+        }
+      });
+  }
+
+  private extractError(err: any, fallback: string): string {
+    if (typeof err?.error === 'string' && err.error.trim()) {
+      return err.error;
+    }
+
+    if (typeof err?.error?.message === 'string' && err.error.message.trim()) {
+      return err.error.message;
+    }
+
+    if (typeof err?.message === 'string' && err.message.trim()) {
+      return err.message;
+    }
+
+    return fallback;
+  }
+}
