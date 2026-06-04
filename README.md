@@ -16,14 +16,18 @@ It is designed for **unified single-container hosting**, allowing the entire fro
 
 ---
 
-## 🚀 One-Click Cloud Hosting (Free)
+## 🚀 One-Click Cloud Hosting (Free & 24/7)
 
-You can deploy the entire application (both frontend and backend) for **free** on Render with zero configuration:
+You can host this combined application (both backend and frontend) for **free** on **Hugging Face Spaces (Docker SDK)** with no credit card and 24/7 online availability:
 
-1. Create a free account on [Render](https://render.com/).
-2. Click **New +** (top right) -> **Blueprint**.
-3. Connect your repository: `ziggy-delivering-happiness`.
-4. Click **Approve** and let Render build and host the app. It will use the root `Dockerfile` to compile both frontend and backend together and serve it instantly!
+1. Create a free account on [Hugging Face](https://huggingface.co/).
+2. Click **New Space** (under your profile menu) -> Name it `ziggy-delivering-happiness` -> Select **Docker** as the SDK -> Select **Blank** template -> Set space visibility to Public.
+3. Go to your Hugging Face Account Settings -> **Access Tokens** -> **Create New Token** -> Role: **Write** -> Name: `GitHub Deploy`. Copy the token value.
+4. Go to your GitHub repository Settings -> **Secrets and variables** -> **Actions** -> **New repository secret**.
+   - Name: `HF_TOKEN`
+   - Value: *Paste the Hugging Face access token*
+5. Every time you push a commit to the `main` branch, the GitHub Actions workflow will automatically push the code to Hugging Face, building and launching your live website!
+
 
 ---
 

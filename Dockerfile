@@ -41,6 +41,6 @@ COPY --from=publish /app/publish .
 # Copy Angular bundles to the C# static resources folder
 COPY --from=frontend-build /app/frontend/dist/food-delivery-app ./wwwroot
 
-ENV PORT=80
-EXPOSE 80
+ENV PORT=7860
+EXPOSE 7860
 ENTRYPOINT ["dotnet", "FoodDeliveryAPI.dll"]
