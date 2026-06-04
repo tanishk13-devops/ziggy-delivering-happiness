@@ -10,6 +10,8 @@ pinned: false
 
 # 🚀 Ziggy: Delivering Happiness
 
+👉 **Live Demo Link:** [https://tanishk2885-ziggy-delivering-happiness.hf.space](https://tanishk2885-ziggy-delivering-happiness.hf.space)
+
 Ziggy is a production-grade, full-stack online food delivery application (similar to Swiggy or Zomato) engineered with a robust .NET Web API backend and a responsive Angular SPA frontend. 
 
 It is designed for **unified single-container hosting**, allowing the entire frontend and backend to build and run together as a single service.
