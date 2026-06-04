@@ -1,3 +1,13 @@
+---
+title: Ziggy Delivering Happiness
+emoji: 🍕
+colorFrom: orange
+colorTo: red
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # 🚀 Ziggy: Delivering Happiness
 
 Ziggy is a production-grade, full-stack online food delivery application (similar to Swiggy or Zomato) engineered with a robust .NET Web API backend and a responsive Angular SPA frontend. 
