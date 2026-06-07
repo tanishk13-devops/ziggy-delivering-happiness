@@ -25,3 +25,7 @@ frontend/*.log
 # SQL Server
 *.mdf
 *.ldf
+
+# Local backend static files
+backend/wwwroot/
+
