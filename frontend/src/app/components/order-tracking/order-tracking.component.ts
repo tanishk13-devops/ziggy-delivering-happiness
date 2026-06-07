@@ -41,6 +41,9 @@ export class OrderTrackingComponent implements OnInit {
         next: (order) => {
           this.orders = [order];
           this.loading = false;
+          if (order.status !== 'Delivered') {
+            this.startSimulation(order);
+          }
         },
         error: () => {
           this.loading = false;
@@ -53,6 +56,10 @@ export class OrderTrackingComponent implements OnInit {
       next: (orders) => {
         this.orders = orders.sort((a, b) => (b.id || 0) - (a.id || 0));
         this.loading = false;
+        const latestOrder = this.orders[0];
+        if (latestOrder && latestOrder.status !== 'Delivered') {
+          this.startSimulation(latestOrder);
+        }
       },
       error: () => {
         this.loading = false;
@@ -109,8 +116,13 @@ export class OrderTrackingComponent implements OnInit {
       clearInterval(this.simulations[order.id]);
     }
 
-    order.status = 'Pending';
-    let index = 0;
+    const currentStatus = order.status;
+    let index = this.getStepIndex(currentStatus);
+    
+    if (index === -1 || index >= this.steps.length - 1) {
+      order.status = 'Pending';
+      index = 0;
+    }
 
     this.simulations[order.id] = setInterval(() => {
       index++;

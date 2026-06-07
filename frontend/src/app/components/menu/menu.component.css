@@ -472,3 +472,121 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Real Database Reviews Section */
+.reviews-main-section {
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 24px;
+}
+
+.reviews-main-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 1.3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 12px;
+}
+
+.reviews-main-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.write-review-block {
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding-right: 30px;
+}
+
+.write-review-block .subtitle {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: 20px;
+}
+
+.db-reviews-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.db-reviews-scroll {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.db-review-card {
+  border-left: 3px solid var(--primary);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.no-db-reviews {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--text-light);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.rating-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  width: 100%;
+}
+
+.rating-select option {
+  background: #111;
+  color: white;
+}
+
+.review-textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  width: 100%;
+  resize: vertical;
+}
+
+.review-textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.btn-submit-review {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.login-prompt-box {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.error-msg {
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .reviews-main-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .write-review-block {
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 24px;
+  }
+}

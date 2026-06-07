@@ -98,7 +98,6 @@ namespace FoodDeliveryAPI.Services.Implementations
 
             return role.Trim() switch
             {
-                "Admin" => "Admin",
                 "DeliveryAgent" => "DeliveryAgent",
                 _ => "Customer"
             };

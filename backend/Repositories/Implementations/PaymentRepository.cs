@@ -22,7 +22,9 @@ namespace FoodDeliveryAPI.Repositories.Implementations
         }
 
         public async Task<Payment?> GetByOrderIdAsync(int orderId)
-            => await _context.Payments.FirstOrDefaultAsync(p => p.OrderId == orderId);
+            => await _context.Payments
+                .Include(p => p.Order)
+                .FirstOrDefaultAsync(p => p.OrderId == orderId);
 
         public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
     }

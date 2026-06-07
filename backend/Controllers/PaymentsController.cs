@@ -1,4 +1,5 @@
 using FoodDeliveryAPI.DTOs;
+using FoodDeliveryAPI.Helpers;
 using FoodDeliveryAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,16 @@ namespace FoodDeliveryAPI.Controllers
         public async Task<IActionResult> GetByOrder(int orderId)
         {
             var payment = await _paymentService.GetByOrderAsync(orderId);
-            return payment == null ? NotFound() : Ok(payment);
+            if (payment == null) return NotFound();
+
+            var userId = User.GetUserId();
+            var isAdmin = User.IsInRole("Admin") || User.IsInRole("DeliveryAgent");
+            if (!isAdmin && payment.Order != null && payment.Order.UserId != userId)
+            {
+                return Forbid();
+            }
+
+            return Ok(payment);
         }
 
         [HttpPatch("order/{orderId:int}")]

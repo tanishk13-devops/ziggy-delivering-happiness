@@ -6,15 +6,17 @@ import { FoodService } from '../../services/food.service';
 import { CartService } from '../../services/cart.service';
 import { RestaurantService } from '../../services/restaurant.service';
 import { AuthService } from '../../services/auth.service';
+import { ReviewService } from '../../services/review.service';
 import { Food } from '../../models/food.model';
 import { CartItem } from '../../models/cart.model';
+import { Review } from '../../models/review.model';
 import { PremiumRestaurant } from '../restaurant-list/restaurant-list.component';
 
 interface MenuFoodItem extends Food {
   image: string;
 }
 
-interface Review {
+interface MockReview {
   author: string;
   rating: number;
   date: string;
@@ -52,61 +54,67 @@ export class MenuComponent implements OnInit {
   bookingTicket: any = null;
 
   // Mock Reviews
-  deliveryReviews: Review[] = [
+  deliveryReviews: MockReview[] = [
     { author: 'Rahul Sharma', rating: 5, date: 'Yesterday', comment: 'Fastest delivery ever! Food was piping hot and package was sealed nicely.' },
     { author: 'Sneha Patel', rating: 4, date: '3 days ago', comment: 'Loved the Schezwan noodles. The portion was huge, could use a bit more spice.' },
     { author: 'Amit Gupta', rating: 4.5, date: '1 week ago', comment: 'Dal Makhani was incredibly creamy. Standard delivery was prompt (around 22 minutes).' }
   ];
 
-  diningReviews: Review[] = [
+  diningReviews: MockReview[] = [
     { author: 'Pooja Hegde', rating: 5, date: 'Last weekend', comment: 'Elegant ambiance, stellar light arrangement, and the live music was outstanding! Reservation was verified instantly.' },
     { author: 'Vikram Singh', rating: 4.8, date: '2 weeks ago', comment: 'Extremely polite staff. The chef recommended special recipes. Perfect spot for family dinners.' },
     { author: 'Nisha K.', rating: 4.2, date: '3 weeks ago', comment: 'Beautiful glass ceiling view. It gets quite crowded on Saturdays, so definitely book a table beforehand.' }
   ];
 
+  databaseReviews: Review[] = [];
+  newReviewRating = 5;
+  newReviewComment = '';
+  submittingReview = false;
+  reviewError = '';
+
   readonly defaultFoodImage = 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1200';
   readonly foodImageMap: Record<string, string> = {
-    'paneer tikka': 'https://images.pexels.com/photos/7625056/pexels-photo-7625056.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'paneer tikka': 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?q=80&w=600',
     'crispy corn': 'https://www.indianhealthyrecipes.com/wp-content/uploads/2023/09/crispy-corn.webp',
     'veg spring roll': 'https://www.vegrecipesofindia.com/wp-content/uploads/2015/10/veg-spring-rolls-recipe.jpg',
-    'chicken 65': 'https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'chicken 65': 'https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?q=80&w=600',
     'hara bhara kebab': 'https://www.indianhealthyrecipes.com/wp-content/uploads/2021/05/hara-bhara-kabab.jpg',
-    'peri peri fries': 'https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'peri peri fries': 'https://images.unsplash.com/photo-1576107232684-1279f390859f?q=80&w=600',
     'chilli paneer': 'https://howtomakerecipes.com/wp-content/uploads/2023/01/chilli-paneer-starter-recipe1.jpg',
     'honey chilli potato': 'https://images.unsplash.com/photo-1604908554027-0c0cfa5a9b43',
-    'tandoori wings': 'https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'tandoori wings': 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?q=80&w=600',
     'stuffed mushrooms': 'https://blackberrybabe.com/wp-content/uploads/2023/11/Stuffed-Portobello-Mushrooms.jpg',
-    'butter chicken': 'https://images.pexels.com/photos/7625056/pexels-photo-7625056.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'kadai paneer': 'https://images.pexels.com/photos/9609838/pexels-photo-9609838.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'butter chicken': 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?q=80&w=600',
+    'kadai paneer': 'https://images.unsplash.com/photo-1596797038530-2c107229654b?q=80&w=600',
     'dal makhani': 'https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/dal-makhani-recipe.jpg',
-    'chicken biryani': 'https://images.pexels.com/photos/12737656/pexels-photo-12737656.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'veg biryani': 'https://images.pexels.com/photos/5410401/pexels-photo-5410401.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'chicken biryani': 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?q=80&w=600',
+    'veg biryani': 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=600',
     'mutton rogan josh': 'https://theyellowdaal.com/wp-content/uploads/2021/01/1611762173130.jpg',
     'prawn curry': 'https://www.whiskaffair.com/wp-content/uploads/2023/02/Shrimp-Masala-2-3.jpg',
-    'thai green curry': 'https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'veg alfredo pasta': 'https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'paneer butter masala': 'https://images.pexels.com/photos/9609842/pexels-photo-9609842.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'fish tikka masala': 'https://images.pexels.com/photos/3296279/pexels-photo-3296279.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'hyderabadi dum biryani': 'https://images.pexels.com/photos/1624487/pexels-photo-1624487.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'thai green curry': 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?q=80&w=600',
+    'veg alfredo pasta': 'https://images.unsplash.com/photo-1645112411341-6c4fd023714a?q=80&w=600',
+    'paneer butter masala': 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?q=80&w=600',
+    'fish tikka masala': 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=600',
+    'hyderabadi dum biryani': 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?q=80&w=600',
     'chole bhature combo': 'https://images.unsplash.com/photo-1626500155537-93690c24099e',
     'rajma chawal bowl': 'https://images.unsplash.com/photo-1617093727343-374698b1b08d',
-    'schezwan noodles': 'https://images.pexels.com/photos/2347311/pexels-photo-2347311.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'schezwan noodles': 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=600',
     'gulab jamun': 'https://pipingpotcurry.com/wp-content/uploads/2023/12/Gulab-Jamun-Recipe-Piping-Pot-Curry.jpg',
     'brownie sundae': 'https://www.bakerykart.com/upload/recipe/large/brownie-sundae-recipe.jpg',
     'rasmalai': 'https://aromaticessence.co/wp-content/uploads/2018/05/49E95995-028D-44D2-9252-2CDA545120D8.jpeg',
-    'chocolate mousse': 'https://images.pexels.com/photos/4110008/pexels-photo-4110008.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'kulfi falooda': 'https://images.pexels.com/photos/1556401/pexels-photo-1556401.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'cheesecake slice': 'https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'chocolate mousse': 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600',
+    'kulfi falooda': 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=600',
+    'cheesecake slice': 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=600',
     'shahi tukda': 'https://www.indianhealthyrecipes.com/wp-content/uploads/2022/02/shahi-tukda-recipe.jpg',
-    'tiramisu cup': 'https://images.pexels.com/photos/6880219/pexels-photo-6880219.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'masala chaas': 'https://images.pexels.com/photos/5946965/pexels-photo-5946965.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'lemon iced tea': 'https://images.pexels.com/photos/1410142/pexels-photo-1410142.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'cold coffee': 'https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'mango shake': 'https://images.pexels.com/photos/5946972/pexels-photo-5946972.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'fresh lime soda': 'https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'filter coffee': 'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'mint mojito': 'https://images.pexels.com/photos/1470520/pexels-photo-1470520.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    'hot chocolate': 'https://images.pexels.com/photos/302904/pexels-photo-302904.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    'tiramisu cup': 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?q=80&w=600',
+    'masala chaas': 'https://images.unsplash.com/photo-15555396273-367ea4eb4db5?q=80&w=600',
+    'lemon iced tea': 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=600',
+    'cold coffee': 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=600',
+    'mango shake': 'https://images.unsplash.com/photo-1553530979-7ee52a2670c4?q=80&w=600',
+    'fresh lime soda': 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=600',
+    'filter coffee': 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=600',
+    'mint mojito': 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=600',
+    'hot chocolate': 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=600'
   };
 
   constructor(
@@ -114,6 +122,7 @@ export class MenuComponent implements OnInit {
     private cartService: CartService,
     private restaurantService: RestaurantService,
     public authService: AuthService,
+    private reviewService: ReviewService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -130,6 +139,7 @@ export class MenuComponent implements OnInit {
       this.restaurantId = Number(params.get('restaurantId') || 1);
       this.loadRestaurantDetails();
       this.loadFoods();
+      this.loadReviews();
     });
   }
 
@@ -298,14 +308,65 @@ export class MenuComponent implements OnInit {
     item.image = this.defaultFoodImage;
   }
 
+  loadReviews(): void {
+    this.reviewService.getRestaurantReviews(this.restaurantId).subscribe({
+      next: (revs) => {
+        this.databaseReviews = revs;
+      },
+      error: () => {
+        this.databaseReviews = [];
+      }
+    });
+  }
+
+  submitReview(): void {
+    if (!this.authService.isLoggedIn()) {
+      alert('Please login to write a review.');
+      return;
+    }
+    if (!this.newReviewComment.trim() || this.newReviewComment.trim().length < 5) {
+      this.reviewError = 'Review comment must be at least 5 characters long.';
+      return;
+    }
+    if (this.newReviewRating < 1 || this.newReviewRating > 5) {
+      this.reviewError = 'Rating must be between 1 and 5 stars.';
+      return;
+    }
+
+    this.submittingReview = true;
+    this.reviewError = '';
+
+    const reviewData: Review = {
+      restaurantId: this.restaurantId,
+      rating: this.newReviewRating,
+      comment: this.newReviewComment
+    };
+
+    this.reviewService.addReview(reviewData).subscribe({
+      next: () => {
+        this.submittingReview = false;
+        this.newReviewComment = '';
+        this.newReviewRating = 5;
+        this.loadReviews();
+        alert('Review submitted successfully!');
+      },
+      error: () => {
+        this.submittingReview = false;
+        this.reviewError = 'Failed to submit review. Try again.';
+      }
+    });
+  }
+
   trackByFood(index: number, item: MenuFoodItem): number {
     return item.id ?? index;
   }
 
   private mapFoodsWithUniqueImages(foods: Food[]): MenuFoodItem[] {
     return foods.map((item) => {
-      const baseName = this.extractBaseDishName(item.name);
-      const image = this.foodImageMap[baseName] || this.defaultFoodImage;
+      const isPlaceholder = !item.imageUrl || item.imageUrl.trim() === '' || item.imageUrl.includes('dummyimage.com');
+      const image = !isPlaceholder 
+        ? item.imageUrl! 
+        : (this.foodImageMap[this.extractBaseDishName(item.name)] || this.defaultFoodImage);
 
       return {
         ...item,

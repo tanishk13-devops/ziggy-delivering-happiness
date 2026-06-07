@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* Lookmax Zomato Style CSS variables */
+/* Lookmax Ziggy Style CSS variables */
 :root {
-  --primary: #E23744; /* Zomato Brand Crimson */
+  --primary: #E23744; /* Ziggy Brand Crimson */
   --primary-hover: #C92C37;
   --secondary: #7C3AED;
-  --gold: #E5BA73; /* Zomato Gold Golden */
+  --gold: #E5BA73; /* Ziggy Gold Golden */
   --gold-dark: #C4923C;
   --background: #0B0F19; /* Sleek premium dark background */
   --surface: #151F32; /* Glass-dark card surface */
@@ -174,7 +174,7 @@ button:active {
   transform: translateY(-2px);
 }
 
-/* Zomato Gold Badge & Portal Styles */
+/* Ziggy Gold Badge & Portal Styles */
 .badge-gold {
   background: var(--gold-gradient);
   color: #0b0f19;
@@ -198,7 +198,7 @@ button:active {
   font-weight: 700;
 }
 
-/* Category Tab Bar Switcher (Zomato-Style) */
+/* Category Tab Bar Switcher (Ziggy-Style) */
 .tab-switcher {
   display: flex;
   justify-content: center;

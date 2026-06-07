@@ -83,6 +83,13 @@ namespace FoodDeliveryAPI.Controllers
             var order = await _orderService.GetOrderByIdAsync(id);
             if (order == null) return NotFound();
 
+            var userId = User.GetUserId();
+            var isAdmin = User.IsInRole("Admin") || User.IsInRole("DeliveryAgent");
+            if (!isAdmin && order.UserId != userId)
+            {
+                return Forbid();
+            }
+
             return Ok(new
             {
                 order.Id,

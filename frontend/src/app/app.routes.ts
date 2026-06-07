@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -37,19 +39,23 @@ export const routes: Routes = [
   },
   {
     path: 'checkout',
-    loadComponent: () => import('./components/checkout/checkout.component').then(m => m.CheckoutComponent)
+    loadComponent: () => import('./components/checkout/checkout.component').then(m => m.CheckoutComponent),
+    canActivate: [authGuard]
   },
   {
     path: 'orders',
-    loadComponent: () => import('./components/orders/orders.component').then(m => m.OrdersComponent)
+    loadComponent: () => import('./components/orders/orders.component').then(m => m.OrdersComponent),
+    canActivate: [authGuard]
   },
   {
     path: 'order-tracking',
-    loadComponent: () => import('./components/order-tracking/order-tracking.component').then(m => m.OrderTrackingComponent)
+    loadComponent: () => import('./components/order-tracking/order-tracking.component').then(m => m.OrderTrackingComponent),
+    canActivate: [authGuard]
   },
   {
     path: 'admin',
-    loadComponent: () => import('./components/admin/admin.component').then(m => m.AdminComponent)
+    loadComponent: () => import('./components/admin/admin.component').then(m => m.AdminComponent),
+    canActivate: [adminGuard]
   },
   {
     path: '**',

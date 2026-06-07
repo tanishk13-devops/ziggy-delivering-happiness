@@ -4,13 +4,14 @@
 	<nav class="nav-links">
 		<a routerLink="/home" routerLinkActive="active">Home</a>
 		<a routerLink="/restaurants" routerLinkActive="active">Restaurants</a>
-		<a routerLink="/cart" routerLinkActive="active" class="cart-link" [class.bump]="cartBump">
+		<a routerLink="/cart" routerLinkActive="active" class="cart-link" [class.bump]="cartBump" *ngIf="authService.isLoggedIn()">
 			<span>Cart</span>
 			<span class="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
 		</a>
-		<a routerLink="/checkout" routerLinkActive="active">Checkout</a>
-		<a routerLink="/orders" routerLinkActive="active">Orders</a>
-		<a routerLink="/order-tracking" routerLinkActive="active">Tracking</a>
+		<a routerLink="/checkout" routerLinkActive="active" *ngIf="authService.isLoggedIn()">Checkout</a>
+		<a routerLink="/orders" routerLinkActive="active" *ngIf="authService.isLoggedIn()">Orders</a>
+		<a routerLink="/order-tracking" routerLinkActive="active" *ngIf="authService.isLoggedIn()">Tracking</a>
+		<a routerLink="/admin" routerLinkActive="active" *ngIf="authService.isLoggedIn() && authService.getCurrentUser()?.role === 'Admin'">Admin Panel</a>
 	</nav>
 
 	<div class="auth-actions" *ngIf="!authService.isLoggedIn(); else loggedInBlock">

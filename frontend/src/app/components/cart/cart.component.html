@@ -42,7 +42,7 @@
         
         <!-- Gold discount -->
         <div class="price-row gold-discount-row" *ngIf="isGold">
-          <span class="gold-text">🏅 Zomato Gold 10% Discount</span>
+          <span class="gold-text">🏅 Ziggy Gold 10% Discount</span>
           <span class="gold-text">-₹{{ discountAmount }}</span>
         </div>
 
@@ -61,11 +61,11 @@
       <!-- Gold Banner inside summary -->
       <div class="cart-gold-banner" [class.gold-active]="isGold">
         <div *ngIf="!isGold" class="gold-upsell">
-          <p>Join Zomato Gold to save <strong>₹{{ potentialSavings }}</strong> instantly on this order!</p>
+          <p>Join Ziggy Gold to save <strong>₹{{ potentialSavings }}</strong> instantly on this order!</p>
           <a routerLink="/home" class="gold-link">Join Gold Now</a>
         </div>
         <div *ngIf="isGold" class="gold-success">
-          <p>🏅 Zomato Gold applied! You saved <strong>₹{{ discountAmount + 40 }}</strong> on this order.</p>
+          <p>🏅 Ziggy Gold applied! You saved <strong>₹{{ discountAmount + 40 }}</strong> on this order.</p>
         </div>
       </div>
 

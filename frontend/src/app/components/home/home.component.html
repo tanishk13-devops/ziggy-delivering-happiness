@@ -3,7 +3,7 @@
     <p>{{ apiError }}</p>
   </section>
 
-  <!-- Zomato Tab Switcher -->
+  <!-- Ziggy Tab Switcher -->
   <div class="tab-switcher glass-panel">
     <button class="tab-btn" [class.active]="activeTab === 'delivery'" (click)="selectTab('delivery')">
       🚴 Delivery
@@ -21,7 +21,7 @@
     <div class="gold-portal-content">
       <div class="gold-header-row">
         <div class="gold-title-area">
-          <span class="badge-gold">🏅 Zomato Gold</span>
+          <span class="badge-gold">🏅 Ziggy Gold</span>
           <h2>Experience Premium Dining & Delivery benefits</h2>
         </div>
         <div class="gold-action-area">
@@ -305,7 +305,7 @@
 
             <!-- Gold Discount note -->
             <div class="gold-discount-note" *ngIf="authService.isGoldMember()">
-              🏅 Zomato Gold: Flat 10% discount applied! You save ₹{{ (selectedEventForBooking.price * eventTicketsCount * 0.1) | number:'1.0-0' }}
+              🏅 Ziggy Gold: Flat 10% discount applied! You save ₹{{ (selectedEventForBooking.price * eventTicketsCount * 0.1) | number:'1.0-0' }}
             </div>
 
             <button class="btn btn-primary w-full mt-4" (click)="bookEventTicket()">
